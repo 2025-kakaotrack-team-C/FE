@@ -1,7 +1,12 @@
 import React from "react";
+import Search from "../components/Search";
 
 function Main() {
-  return <div>메인화면입니다.</div>;
+  return (
+    <div>
+      <Search />
+    </div>
+  );
 }
 
 export default Main;
