@@ -55,7 +55,7 @@ const SideBar = () => {
           <Menu>
             <MenuItemWithArrow
               as={NavLink}
-              to="/all"
+              to="/"
               onClick={handleTeamBuildingClick}
               isSelected={
                 selectedMenuItem === "팀빌딩" ||

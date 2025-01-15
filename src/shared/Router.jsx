@@ -1,17 +1,21 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Main from "../pages/Main";
+// import Main from "../pages/Home";
 import Layout from "../components/Layout";
-import Team from "../pages/TeamBuilding";
 import MyPage from "../pages/MyPage";
 import Notifications from "../pages/Notifications";
+import Team from "../pages/Team";
+import TeamDetail from "../pages/TeamDetail";
+import CreateTeam from "../pages/CreateTeam";
 
 function Router() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Main />} />
-          <Route path="/:category" element={<Team />} />
+          <Route path="/" element={<Team />} />
+          <Route path="/:type" element={<Team />} />
+          <Route path="/:type/:id" element={<TeamDetail />} />
+          <Route path="/create" element={<CreateTeam />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notifications" element={<Notifications />} />
         </Route>
