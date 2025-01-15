@@ -1,21 +1,36 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import SideBar from "../components/SideBar";
+import styled from "styled-components";
 
 const Layout = () => {
-  //   const location = useLocation();
-
-  // "/" 경로일 경우 사이드바를 숨김
-  //   const showSidebar = location.pathname !== "/";
-
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      <SideBar />
-      <div style={{ flex: 1, padding: "24px" }}>
+    <Container>
+      <SideBarWrapper>
+        <SideBar />
+      </SideBarWrapper>
+      <ContentWrapper>
         <Outlet />
-      </div>
-    </div>
+      </ContentWrapper>
+    </Container>
   );
 };
 
 export default Layout;
+
+// 스타일링
+const Container = styled.div`
+  display: flex;
+  height: 100vh;
+`;
+
+const SideBarWrapper = styled.div`
+  height: 100%;
+  flex-shrink: 0;
+`;
+
+const ContentWrapper = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  background-color: #fefbff;
+`;
