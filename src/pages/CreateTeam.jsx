@@ -6,6 +6,7 @@ import {
   IoIosAddCircle,
   IoIosRemoveCircle,
 } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 function CreateTeam() {
   const [fields, setFields] = useState([]);
@@ -16,11 +17,12 @@ function CreateTeam() {
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
   const [day, setDay] = useState("");
+  const navigate = useNavigate();
 
   const addField = () => {
     if (currentField.field && currentField.members) {
-      setFields([...fields, currentField]);
-      setCurrentField({ field: "", members: 1 }); // 초기화
+      setFields((prevFields) => [...prevFields, currentField]);
+      setCurrentField({ field: "", members: 1 });
     } else {
       alert("분야와 인원을 선택해주세요!");
     }
@@ -30,24 +32,29 @@ function CreateTeam() {
     const updatedFields = fields.filter((_, i) => i !== index);
     setFields(updatedFields);
   };
-
   const handleSubmit = async () => {
     if (!title || !description || !difficulty || !year || !month || !day) {
       alert("모든 필드를 입력하세요!");
       return;
     }
 
+    const fieldMapping = {
+      AI: 1,
+      프론트: 2,
+      백: 3,
+      앱: 4,
+      게임: 5,
+    };
+
     const projectData = {
-      project: {
-        title,
-        description,
-        difficulty: parseInt(difficulty, 10),
-        deadline: `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`,
-        status: 1,
-      },
-      field: fields.map((field) => ({
-        department: field.field, // 분야
-        range: field.members, // 인원
+      userId: 1,
+      description,
+      difficult: parseInt(difficulty, 10),
+      deadline: `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`,
+      status: 1,
+      fields: fields.map((field) => ({
+        department: fieldMapping[field.field],
+        range: field.members, // 인원 수
       })),
     };
 
@@ -274,7 +281,7 @@ function CreateTeam() {
 
       <ButtonLayout>
         <Button onClick={handleSubmit}>작성</Button>
-        <Button1>닫기</Button1>
+        <Button1 onClick={() => navigate(-1)}>닫기</Button1>
       </ButtonLayout>
     </Container>
   );
