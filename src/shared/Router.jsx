@@ -8,6 +8,8 @@ import Notifications from "../pages/Notifications";
 import CreateTeam from "../pages/CreateTeam";
 import Team from "../pages/Team";
 import TeamDetail from "../pages/TeamDetail";
+import Login from "../pages/Login";
+import Signup from "../pages/Signup";
 // import MainPage from "../pages/Team";
 //test
 
@@ -23,6 +25,8 @@ function Router() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notifications" element={<Notifications />} />
         </Route>
+           <Route path="/login" element={<Login />} />
+           <Route path="/signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   );
