@@ -60,7 +60,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-content: center;
-  min-height: 100vh; /* 높이를 최소 화면 크기로 설정 */
+  min-height: 100vh;
   padding: 24px;
   margin: 0 auto;
   max-width: 1440px;

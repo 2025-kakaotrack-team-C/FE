@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import axios from "axios";
 import {
   IoIosArrowDown,
   IoIosAddCircle,
@@ -9,6 +10,12 @@ import {
 function CreateTeam() {
   const [fields, setFields] = useState([]);
   const [currentField, setCurrentField] = useState({ field: "", members: 1 });
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [difficulty, setDifficulty] = useState("");
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
+  const [day, setDay] = useState("");
 
   const addField = () => {
     if (currentField.field && currentField.members) {
@@ -24,13 +31,52 @@ function CreateTeam() {
     setFields(updatedFields);
   };
 
+  const handleSubmit = async () => {
+    if (!title || !description || !difficulty || !year || !month || !day) {
+      alert("모든 필드를 입력하세요!");
+      return;
+    }
+
+    const projectData = {
+      project: {
+        title,
+        description,
+        difficulty: parseInt(difficulty, 10),
+        deadline: `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`,
+        status: 1,
+      },
+      field: fields.map((field) => ({
+        department: field.field, // 분야
+        range: field.members, // 인원
+      })),
+    };
+
+    try {
+      const response = await axios.post("api/projects", projectData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("응답 데이터:", response.data);
+      alert("데이터가 성공적으로 전송되었습니다!");
+    } catch (error) {
+      console.error("에러 발생:", error);
+      alert("데이터 전송 중 에러가 발생했습니다.");
+    }
+  };
+
   return (
     <Container>
       <Header>팀 만들기</Header>
 
       <DetailLayout>
         <DetailTitle>게시물 제목</DetailTitle>
-        <StyledInput type="text" placeholder="게시물 제목을 입력하세요" />
+        <StyledInput
+          type="text"
+          placeholder="게시물 제목을 입력하세요"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
       </DetailLayout>
 
       <DetailLayout>
@@ -38,7 +84,10 @@ function CreateTeam() {
           <HalfSection>
             <DetailTitle>난이도</DetailTitle>
             <SelectWrapper>
-              <Select defaultValue="">
+              <Select
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value)}
+              >
                 <option value="" disabled>
                   난이도
                 </option>
@@ -55,7 +104,10 @@ function CreateTeam() {
             <DetailTitle>기간</DetailTitle>
             <DatePickerWrapper>
               <ScrollSelectWrapper>
-                <ScrollSelect defaultValue="">
+                <ScrollSelect
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                >
                   <option value="" disabled>
                     년도
                   </option>
@@ -71,7 +123,10 @@ function CreateTeam() {
               </ScrollSelectWrapper>
 
               <ScrollSelectWrapper>
-                <ScrollSelect defaultValue="">
+                <ScrollSelect
+                  value={month}
+                  onChange={(e) => setMonth(e.target.value)}
+                >
                   <option value="" disabled>
                     월
                   </option>
@@ -87,7 +142,10 @@ function CreateTeam() {
               </ScrollSelectWrapper>
 
               <ScrollSelectWrapper>
-                <ScrollSelect defaultValue="">
+                <ScrollSelect
+                  value={day}
+                  onChange={(e) => setDay(e.target.value)}
+                >
                   <option value="" disabled>
                     일
                   </option>
@@ -164,26 +222,15 @@ function CreateTeam() {
         {fields.map((item, index) => (
           <FieldRow key={index}>
             <SelectWrapper>
-              <Select
-                value={item.field}
-                onChange={(e) => {
-                  const updatedFields = [...fields];
-                  updatedFields[index].field = e.target.value;
-                  setFields(updatedFields);
-                }}
-                style={{
-                  backgroundColor: "#f0f0f0", // 모든 Row에 동일한 배경색
-                }}
-                disabled={true} // 추가된 요소는 비활성화
-              >
+              <Select value={item.field} disabled={true}>
                 <option value="" disabled>
                   분야 선택
                 </option>
-                <option value="AI">ai</option>
-                <option value="프론트">프론트</option>
-                <option value="백">백</option>
-                <option value="앱">앱</option>
-                <option value="게임">게임</option>
+                <option value="1">ai</option>
+                <option value="2">프론트</option>
+                <option value="3">백</option>
+                <option value="4">앱</option>
+                <option value="4">게임</option>
               </Select>
               <Icon>
                 <IoIosArrowDown size={24} />
@@ -191,18 +238,7 @@ function CreateTeam() {
             </SelectWrapper>
 
             <SelectWrapper>
-              <Select
-                value={item.members}
-                onChange={(e) => {
-                  const updatedFields = [...fields];
-                  updatedFields[index].members = parseInt(e.target.value, 10);
-                  setFields(updatedFields);
-                }}
-                style={{
-                  backgroundColor: "#f0f0f0", // 모든 Row에 동일한 배경색
-                }}
-                disabled={true} // 추가된 요소는 비활성화
-              >
+              <Select value={item.members} disabled={true}>
                 {Array.from({ length: 10 }, (_, i) => (
                   <option key={i} value={i + 1}>
                     {i + 1}명
@@ -231,11 +267,13 @@ function CreateTeam() {
         <StyledTextArea
           type="textarea"
           placeholder="프로젝트 설명을 입력하세요"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
       </DetailLayout>
 
       <ButtonLayout>
-        <Button>작성</Button>
+        <Button onClick={handleSubmit}>작성</Button>
         <Button1>닫기</Button1>
       </ButtonLayout>
     </Container>
@@ -254,7 +292,6 @@ const Container = styled.div`
   margin: auto;
   max-width: 1440px;
   width: 100%;
-  /* overflow: auto; */
 `;
 
 const Header = styled.h1`

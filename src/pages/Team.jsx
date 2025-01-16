@@ -1,38 +1,96 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Search from "../components/Search";
 
 const Team = () => {
-  const { type } = useParams(); // URL의 type 파라미터 가져오기
   const navigate = useNavigate();
+  const { category } = useParams(); // URL 파라미터에서 category 가져오기
+  const normalizedCategory = category?.toLowerCase(); // 소문자로 변환
 
-  // URL의 type이 없을 경우 기본값 'all' 사용
-  const effectiveType = type || "all";
-
-  // 페이지 제목과 필드 설정
-  const pageData = {
-    all: { title: "전체", fields: ["전체", "전체"] },
-    ai: { title: "AI 팀", fields: ["머신러닝", "데이터 분석"] },
-    frontend: { title: "프론트엔드 팀", fields: ["React", "CSS"] },
-    backend: { title: "백엔드 팀", fields: ["Node.js", "Database"] },
-    app: { title: "앱 개발 팀", fields: ["iOS", "Android"] },
-    game: { title: "게임 개발 팀", fields: ["Unity", "C#"] },
+  // 부서 데이터를 미리 정의 (부서 번호 -> 부서 이름 매핑)
+  const departmentsData = {
+    10: "ai",
+    20: "frontend",
+    3: "backend",
+    5: "app",
+    6: "game",
+    // 추가 부서 정보
   };
 
-  const currentPageData = pageData[effectiveType] || {
-    title: "팀 정보 없음",
-    fields: [],
-  };
+  // 프로젝트 데이터 예시
+  const [projects, setProjects] = useState([
+    {
+      id: 1,
+      title: "New Project",
+      totalRange: 13,
+      deadline: "2025-01-31",
+      departments: [10, 20],
+    },
+    {
+      id: 2,
+      title: "New Project test",
+      totalRange: 10,
+      deadline: "2025-01-31",
+      departments: [3, 20],
+    },
+    {
+      id: 3,
+      title: "New Project",
+      totalRange: 13,
+      deadline: "2025-01-31",
+      departments: [10, 20],
+    },
+    {
+      id: 4,
+      title: "New Project test",
+      totalRange: 10,
+      deadline: "2025-01-31",
+      departments: [3, 20],
+    },
+    {
+      id: 5,
+      title: "New Project test",
+      totalRange: 10,
+      deadline: "2025-01-31",
+      departments: [3, 20],
+    },
+    {
+      id: 6,
+      title: "New Project test",
+      totalRange: 10,
+      deadline: "2025-01-31",
+      departments: [3, 20],
+    },
+    {
+      id: 7,
+      title: "New Project test",
+      totalRange: 10,
+      deadline: "2025-01-31",
+      departments: [3, 20],
+    },
+  ]);
 
-  // 테스트용 데이터 배열 생성
-  const teamData = Array.from({ length: 30 }, (_, index) => ({
-    id: index,
-    title: `${currentPageData.title} ${index + 1}`,
-    fields: currentPageData.fields,
-    info: ["참여인원", "언제까지"],
-  }));
+  // 카테고리에 맞는 프로젝트 필터링
+  console.log("Departments Data:", departmentsData);
+  console.log(
+    "Project Departments:",
+    projects.map((p) => p.departments)
+  );
+
+  // 카테고리에 맞는 프로젝트 필터링
+  const filteredProjects = normalizedCategory
+    ? projects.filter((project) =>
+        project.departments.some((deptId) => {
+          const deptName = departmentsData[deptId]; // deptId로 departmentsData에서 이름 조회
+          return deptName?.toLowerCase() === normalizedCategory; // 이름과 normalizedCategory 비교
+        })
+      )
+    : projects;
+
+  console.log("Normalized Category:", normalizedCategory);
+  console.log("Filtered Projects:", filteredProjects);
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,7 +99,10 @@ const Team = () => {
   // 현재 페이지 데이터 계산
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = teamData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredProjects.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber) => {
@@ -49,7 +110,7 @@ const Team = () => {
   };
 
   // 전체 페이지 수 계산
-  const totalPages = Math.ceil(teamData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
 
   const goToCreateTeamPage = () => {
     navigate(`/create`);
@@ -59,27 +120,26 @@ const Team = () => {
     <Container>
       <Search />
       <Title>
-        <Header>{currentPageData.title}</Header>
+        <Header>{category ? `${category} 프로젝트` : "전체 프로젝트"}</Header>
         <AddButton onClick={goToCreateTeamPage}>
           <AiOutlinePlusCircle />
         </AddButton>
       </Title>
       <TeamWrapper>
-        {currentItems.map((team) => (
+        {currentItems.map((project) => (
           <TeamBorder
-            key={team.id}
-            onClick={() => navigate(`/${effectiveType}/${team.id}`)} // 항상 유효한 URL 생성 // 게시물 클릭 시 이동
+            key={project.id}
+            onClick={() => navigate(`/project/${project.id}`)} // 프로젝트 세부 페이지로 이동
           >
             <FieldLayout>
-              {team.fields.map((field, index) => (
-                <Field key={index}>{field}</Field>
+              {project.departments.map((deptId) => (
+                <Field key={deptId}>{departmentsData[deptId]}</Field>
               ))}
             </FieldLayout>
-            <TeamTitle>{team.title}</TeamTitle>
+            <TeamTitle>{project.title}</TeamTitle>
             <TeamInfo>
-              {team.info.map((info, index) => (
-                <div key={index}>{info}</div>
-              ))}
+              <div>참여 인원: {project.totalRange}</div>
+              <div>마감일: {project.deadline}</div>
             </TeamInfo>
           </TeamBorder>
         ))}
@@ -106,10 +166,18 @@ const Container = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* 높이를 최소 화면 크기로 설정 */
+  min-height: 100vh;
   padding: 24px;
-  margin: 0 auto; /* 중앙 정렬 */
+  margin: 0 auto;
   max-width: 1440px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+  }
 `;
 
 const Title = styled.div`
@@ -117,6 +185,11 @@ const Title = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 
 const Header = styled.h1`
@@ -124,6 +197,14 @@ const Header = styled.h1`
   font-family: "yg-jalnan", sans-serif;
   color: #1c1c1d;
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 24px;
+  }
 `;
 
 const AddButton = styled.button`
@@ -147,13 +228,28 @@ const AddButton = styled.button`
     color: #dcdaf5;
     transform: scale(0.95);
   }
+
+  @media (max-width: 480px) {
+    font-size: 32px;
+  }
 `;
 
 const TeamWrapper = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개 */
-  gap: 20px;
+  gap: 24px;
   flex-grow: 1;
+
+  @media (min-width: 1025px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const TeamBorder = styled.div`
@@ -163,7 +259,7 @@ const TeamBorder = styled.div`
   padding: 20px;
   background-color: #f8f1f6;
   border-radius: 20px;
-  min-width: 300px;
+  min-width: 250px;
   min-height: 280px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
@@ -174,6 +270,10 @@ const TeamBorder = styled.div`
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
     background-color: #dcdaf5;
   }
+
+  @media (max-width: 480px) {
+    padding: 16px;
+  }
 `;
 
 const FieldLayout = styled.div`
@@ -181,6 +281,11 @@ const FieldLayout = styled.div`
   justify-content: flex-end;
   gap: 10px;
   align-items: center;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 5px;
+  }
 `;
 
 const Field = styled.div`
@@ -190,6 +295,11 @@ const Field = styled.div`
   background-color: #00e636;
   font-size: 13px;
   text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
 `;
 
 const TeamTitle = styled.h2`
@@ -197,6 +307,14 @@ const TeamTitle = styled.h2`
   font-weight: bold;
   margin-top: 14px;
   color: #1c1c1d;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
 `;
 
 const TeamInfo = styled.div`
@@ -205,6 +323,10 @@ const TeamInfo = styled.div`
   gap: 10px;
   font-size: 15px;
   color: #1c1c1d;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const Pagination = styled.div`
@@ -213,11 +335,15 @@ const Pagination = styled.div`
   align-items: center;
   margin-top: 14px;
   padding: 8px 16px;
-  gap: 12px; /* 간격 조정 */
+  gap: 12px;
+
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
 `;
 
 const PageButton = styled.button`
-  padding: 12px 16px; /* 버튼 크기 증가 */
+  padding: 12px 16px;
   border-radius: 50%;
   background-color: ${(props) => (props.isActive ? "#21005d" : "#f8f1f6")};
   color: ${(props) => (props.isActive ? "#ffffff" : "#21005d")};
@@ -232,5 +358,10 @@ const PageButton = styled.button`
 
   &:active {
     transform: scale(0.95);
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px 12px;
+    font-size: 14px;
   }
 `;
