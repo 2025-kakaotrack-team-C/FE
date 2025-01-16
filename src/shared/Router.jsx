@@ -9,6 +9,7 @@ import CreateTeam from "../pages/CreateTeam";
 import Team from "../pages/Team";
 import TeamDetail from "../pages/TeamDetail";
 // import MainPage from "../pages/Team";
+//test
 
 function Router() {
   return (
