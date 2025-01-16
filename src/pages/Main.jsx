@@ -20,9 +20,9 @@ const BoxContainer = styled.div`
 `;
 
 const Logo = styled.div`
-  font-family: "Jalnan";
+  font-family: "yg-jalnan";
   font-size: 2vw;
-  margin-top: 10vh;
+  margin-top: 9vh;
 `;
 
 const Button = styled.button`
@@ -34,11 +34,12 @@ const Button = styled.button`
   background-color: ${(props) => props.buttonColor};
   color: ${(props) => props.textColor};
   font-weight: bold;
-  font-size: 0.9vw;
+  font-size: 1vw;
   width: 20vw;
   height: 5vh;
   margin-top: ${(props) => props.buttonMargin || "1.3vh"};
   position: relative;
+  font-family: "Pretendard-Regular";
 
 
   &:hover {
@@ -66,6 +67,7 @@ const TextContainer = styled.div`
   text-align: center;
   margin-top: 6vh;
   align-items: center;
+  font-family: "Pretendard-Regular";
   font-size: 1vw;
   font-weight: normal;
 `;

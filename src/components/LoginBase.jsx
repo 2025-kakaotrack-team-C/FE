@@ -30,10 +30,10 @@ const LeftSection = styled.div`
 
 const WelcomeText = styled.div`
     white-space: pre-line;
-    font-family: "Jalnan";
+    font-family: "yg-jalnan";
     font-size: 2.5vw;
     margin-left: 4vw;
-    margin-top: 7.5vh;
+    margin-top: 7vh;
 `;
 
 const Box = styled.div`

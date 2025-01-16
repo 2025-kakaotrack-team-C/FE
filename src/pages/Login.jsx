@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import LoginBase from "../components/LoginBase.jsx";
+import axios from "axios";
 
 const BoxContainer = styled.div`
   position: absolute;
@@ -17,14 +18,15 @@ const BoxContainer = styled.div`
 `;
 
 const Title = styled.div`
-    font-family: "Jalnan";
+    font-family: "yg-jalnan";
     font-size: 1.5vw;
     margin-left: 3vw;
-    margin-top: 9vh;
+    margin-top: 7vh;
 `;
 
 const Text = styled.div`
     font-size: 1.2vw;
+    font-family: "Pretendard-Regular";
     margin-left: 3vw;
     margin-top: 4vh;
     position: absolute;
@@ -47,6 +49,7 @@ const InputBox = styled.input`
 const WarningText = styled.div`
     color: #FF6140;
     align-self: flex-start;
+    font-family: "Pretendard-Regular";
     font-size: 0.7vw;
     position: absolute;
     margin-left: 3vw;
@@ -58,22 +61,23 @@ const LoginButton = styled.button`
     height: 5vh;
     border-radius: 10px;
     background-color: ${(props) => (props.disabled ? "#DCDAF5" : "rgba(100, 66, 214, 0.2)")};
-    font-family: "Jalnan";
+    font-family: "yg-jalnan";
     font-size: 1.3vw;
     color: ${(props) => (props.disabled ? "#ffffff" : "#21005D")};
     cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
     position: absolute;
-    bottom: 15vh;
+    bottom: 16vh;
     margin-left: 3vw;
 `;
 
 const TextContainer = styled.div`
   text-align: center;
   align-items: center;
+  font-family: "Pretendard-Regular";
   font-size: 1vw;
   font-weight: normal;
   margin-left: 5.6vw;
-  margin-top: 40vh;
+  margin-top: 40.4vh;
 `;
 
 const SignupText = styled.button`
@@ -106,18 +110,39 @@ function Login() {
         navigate("/signup");
     };
 
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post('http://localhost:8080/members/sign-in', {
+                username: email,
+                password: password
+            });
+            
+            alert('로그인에 성공했습니다!.');
+            // 토큰을 localStorage에 저장
+            const accessToken = response.data.accessToken;
+
+            document.cookie = `token=${accessToken}; max-age=604800; path=/`;
+            // 루트 페이지로 이동
+            navigate('/');
+            
+        } catch (error) {
+            console.error('로그인 에러:', error);
+            alert('로그인에 실패했습니다.');
+        }
+    };
+
     return (
         <div>
             <LoginBase />
             <BoxContainer>
                 <Title>이메일 로그인</Title>
-                <Text textTop="11vh">아이디</Text>
-                <InputBox type="text" value={email} onChange={handleEmailChange} inputBoxTop="18vh" />
-                {!emailValid && email.length > 0 && <WarningText warningTop="23.5vh">이메일 형식을 확인해주세요.</WarningText>}
-                <Text textTop="22vh">비밀번호</Text>
-                <InputBox type="password" value={password} onChange={handlePasswordChange} inputBoxTop="29vh" />
-                {!passwordValid && password.length > 0 && <WarningText warningTop="34.5vh">비밀번호는 문자, 숫자, 특수문자를 포함하여 8~20자 이내로 입력하세요.</WarningText>}
-                <LoginButton disabled={!isFormValid}>로그인</LoginButton>
+                <Text textTop="10vh">아이디</Text>
+                <InputBox type="text" value={email} onChange={handleEmailChange} inputBoxTop="17vh" />
+                {!emailValid && email.length > 0 && <WarningText warningTop="23vh">이메일 형식을 확인해주세요.</WarningText>}
+                <Text textTop="21vh">비밀번호</Text>
+                <InputBox type="password" value={password} onChange={handlePasswordChange} inputBoxTop="28vh" />
+                {!passwordValid && password.length > 0 && <WarningText warningTop="34vh">비밀번호는 문자, 숫자, 특수문자를 포함하여 8~20자 이내로 입력하세요.</WarningText>}
+                <LoginButton disabled={!isFormValid} onClick={handleLogin}>로그인</LoginButton>
                 <TextContainer>아직 회원이 아니신가요? <SignupText onClick={navigateToSignup}>가입하기</SignupText></TextContainer>
             </BoxContainer>
         </div>

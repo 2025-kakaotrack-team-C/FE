@@ -10,6 +10,7 @@ import Team from "../pages/Team";
 import TeamDetail from "../pages/TeamDetail";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
+import Main from "../pages/Main";
 // import MainPage from "../pages/Team";
 //test
 
@@ -25,6 +26,7 @@ function Router() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notifications" element={<Notifications />} />
         </Route>
+           <Route path="/main" element={<Main />} />
            <Route path="/login" element={<Login />} />
            <Route path="/signup" element={<Signup />} />
       </Routes>
