@@ -8,15 +8,23 @@ import {
 } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
-function CreateTeam() {
-  const [fields, setFields] = useState([]);
+function EditTeamForm({ existingData, onCancel, onSave }) {
+  const [fields, setFields] = useState(existingData.fields || []);
   const [currentField, setCurrentField] = useState({ field: "", members: 1 });
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [difficulty, setDifficulty] = useState("");
-  const [year, setYear] = useState("");
-  const [month, setMonth] = useState("");
-  const [day, setDay] = useState("");
+  const [title, setTitle] = useState(existingData.title || "");
+  const [description, setDescription] = useState(
+    existingData.description || ""
+  );
+  const [difficulty, setDifficulty] = useState(existingData.difficulty || "");
+  const [year, setYear] = useState(
+    existingData.deadline ? existingData.deadline.split("-")[0] : ""
+  );
+  const [month, setMonth] = useState(
+    existingData.deadline ? existingData.deadline.split("-")[1] : ""
+  );
+  const [day, setDay] = useState(
+    existingData.deadline ? existingData.deadline.split("-")[2] : ""
+  );
   const navigate = useNavigate();
 
   const addField = () => {
@@ -48,12 +56,12 @@ function CreateTeam() {
     };
 
     const projectData = {
-      userId: 1,
+      userId: existingData.userId,
       title,
       description,
       difficult: parseInt(difficulty, 10),
       deadline: `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`,
-      status: 1,
+      status: existingData.status,
       fields: fields.map((field) => ({
         department: fieldMapping[field.field],
         range: field.members,
@@ -61,22 +69,27 @@ function CreateTeam() {
     };
 
     try {
-      const response = await axios.post("api/projects", projectData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log("응답 데이터:", response.data);
-      alert("데이터가 성공적으로 전송되었습니다!");
+      const response = await axios.put(
+        `/api/team/${existingData.id}`,
+        projectData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("수정된 데이터:", response.data);
+      alert("데이터가 성공적으로 수정되었습니다!");
+      onSave(response.data); // 부모 컴포넌트에 업데이트된 데이터 전달
     } catch (error) {
-      console.error("에러 발생:", error);
-      alert("데이터 전송 중 에러가 발생했습니다.");
+      console.error("수정 중 에러 발생:", error);
+      alert("데이터 수정 중 에러가 발생했습니다.");
     }
   };
 
   return (
     <Container>
-      <Header>팀 만들기</Header>
+      <Header>팀 수정하기</Header>
 
       <DetailLayout>
         <DetailTitle>게시물 제목</DetailTitle>
@@ -271,7 +284,6 @@ function CreateTeam() {
       <DetailLayout>
         <DetailTitle>프로젝트 설명</DetailTitle>
         <StyledTextArea
-          type="textarea"
           placeholder="프로젝트 설명을 입력하세요"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -279,15 +291,16 @@ function CreateTeam() {
       </DetailLayout>
 
       <ButtonLayout>
-        <Button onClick={handleSubmit}>작성</Button>
-        <Button1 onClick={() => navigate(-1)}>닫기</Button1>
+        <Button onClick={handleSubmit}>수정 완료</Button>
+        <Button1 onClick={onCancel}>취소</Button1>
       </ButtonLayout>
     </Container>
   );
 }
 
-export default CreateTeam;
+export default EditTeamForm;
 
+// 스타일 컴포넌트 정의 (CreateTeam과 동일하게 재사용)
 const Container = styled.div`
   display: flex;
   flex-direction: column;
