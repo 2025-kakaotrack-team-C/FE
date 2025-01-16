@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import {
   FaUser,
@@ -20,7 +20,7 @@ const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const teamBuildingItems = [
-    { name: "AI", icon: <FaRobot />, path: "/ai" },
+    { name: "ai", icon: <FaRobot />, path: "/ai" },
     { name: "프론트엔드", icon: <FaCode />, path: "/frontend" },
     { name: "백엔드", icon: <FaServer />, path: "/backend" },
     { name: "앱 개발", icon: <FaMobileAlt />, path: "/app" },
@@ -38,13 +38,93 @@ const SideBar = () => {
     setIsTeamBuildingOpen(false);
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setIsCollapsed(true);
+      } else {
+        setIsCollapsed(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <Sidebar isCollapsed={isCollapsed}>
+    <SidebarContainer isCollapsed={isCollapsed}>
       <Header>
-        <Logo onClick={toggleSidebar}>PIN</Logo>
+        <Logo
+          onClick={(e) => {
+            if (window.innerWidth <= 768) {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            } else {
+              toggleSidebar();
+            }
+          }}
+        >
+          PIN
+        </Logo>
       </Header>
 
-      {!isCollapsed && (
+      {isCollapsed ? (
+        // 축소된 상태: 아이콘과 팀빌딩 분류 표시
+        <Menu>
+          {/* 팀빌딩 아이콘 및 토글 */}
+          <MenuItem
+            as="div"
+            onClick={handleTeamBuildingClick}
+            title="팀빌딩"
+            style={{ justifyContent: "center" }}
+          >
+            <FaUsers />
+          </MenuItem>
+          {/* 팀빌딩 하위 항목들 */}
+          {isTeamBuildingOpen &&
+            teamBuildingItems.map((item) => (
+              <MenuItem
+                as={NavLink}
+                to={item.path}
+                key={item.name}
+                isSelected={selectedMenuItem === item.name}
+                onClick={() => setSelectedMenuItem(item.name)}
+                title={item.name}
+                style={{ justifyContent: "center", padding: "12px 0" }}
+              >
+                {item.icon}
+              </MenuItem>
+            ))}
+
+          <MenuItem
+            as={NavLink}
+            to="/mypage"
+            title="마이페이지"
+            style={{ justifyContent: "center", padding: "12px 0" }}
+          >
+            <FaUser />
+          </MenuItem>
+          <FixedBottom>
+            <MenuItem
+              as={NavLink}
+              to="/notifications"
+              title="알림"
+              style={{ justifyContent: "center", padding: "12px 0" }}
+            >
+              <FaBell />
+            </MenuItem>
+            <LogoutButton
+              type="button"
+              onClick={() => setSelectedMenuItem("로그아웃")}
+              title="로그아웃"
+              style={{ justifyContent: "center" }}
+            >
+              <FaSignOutAlt />
+            </LogoutButton>
+          </FixedBottom>
+        </Menu>
+      ) : (
+        // 확장된 상태: 전체 메뉴 표시
         <>
           <SidebarProfile>
             <SideBarPicture />
@@ -115,14 +195,14 @@ const SideBar = () => {
           </FixedBottom>
         </>
       )}
-    </Sidebar>
+    </SidebarContainer>
   );
 };
 
 export default SideBar;
 
 // 스타일링
-const Sidebar = styled.div`
+const SidebarContainer = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 0px 24px 24px 0px;
