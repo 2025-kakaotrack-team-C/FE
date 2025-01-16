@@ -11,11 +11,11 @@ const Team = () => {
 
   // 부서 데이터를 미리 정의 (부서 번호 -> 부서 이름 매핑)
   const departmentsData = {
-    10: "ai",
-    20: "frontend",
+    1: "ai",
+    2: "frontend",
     3: "backend",
-    5: "app",
-    6: "game",
+    4: "app",
+    5: "game",
     // 추가 부서 정보
   };
 
@@ -26,49 +26,49 @@ const Team = () => {
       title: "New Project",
       totalRange: 13,
       deadline: "2025-01-31",
-      departments: [10, 20],
+      departments: [1, 2],
     },
     {
       id: 2,
       title: "New Project test",
       totalRange: 10,
       deadline: "2025-01-31",
-      departments: [3, 20],
+      departments: [3, 4],
     },
     {
       id: 3,
       title: "New Project",
       totalRange: 13,
       deadline: "2025-01-31",
-      departments: [10, 20],
+      departments: [5, 1],
     },
     {
       id: 4,
       title: "New Project test",
       totalRange: 10,
       deadline: "2025-01-31",
-      departments: [3, 20],
+      departments: [3, 2],
     },
     {
       id: 5,
       title: "New Project test",
       totalRange: 10,
       deadline: "2025-01-31",
-      departments: [3, 20],
+      departments: [3, 2],
     },
     {
       id: 6,
       title: "New Project test",
       totalRange: 10,
       deadline: "2025-01-31",
-      departments: [3, 20],
+      departments: [3, 2],
     },
     {
       id: 7,
       title: "New Project test",
       totalRange: 10,
       deadline: "2025-01-31",
-      departments: [3, 20],
+      departments: [3, 2],
     },
   ]);
 
