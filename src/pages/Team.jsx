@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useNavigate, useParams } from "react-router-dom";
 import Search from "../components/Search";
@@ -19,65 +20,21 @@ const Team = () => {
     // 추가 부서 정보
   };
 
-  // 프로젝트 데이터 예시
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: "New Project",
-      totalRange: 13,
-      deadline: "2025-01-31",
-      departments: [1, 2],
-    },
-    {
-      id: 2,
-      title: "New Project test",
-      totalRange: 10,
-      deadline: "2025-01-31",
-      departments: [3, 4],
-    },
-    {
-      id: 3,
-      title: "New Project",
-      totalRange: 13,
-      deadline: "2025-01-31",
-      departments: [5, 1],
-    },
-    {
-      id: 4,
-      title: "New Project test",
-      totalRange: 10,
-      deadline: "2025-01-31",
-      departments: [3, 2],
-    },
-    {
-      id: 5,
-      title: "New Project test",
-      totalRange: 10,
-      deadline: "2025-01-31",
-      departments: [3, 2],
-    },
-    {
-      id: 6,
-      title: "New Project test",
-      totalRange: 10,
-      deadline: "2025-01-31",
-      departments: [3, 2],
-    },
-    {
-      id: 7,
-      title: "New Project test",
-      totalRange: 10,
-      deadline: "2025-01-31",
-      departments: [3, 2],
-    },
-  ]);
+  const [projects, setProjects] = useState([]); // 프로젝트 데이터 상태
 
-  // 카테고리에 맞는 프로젝트 필터링
-  console.log("Departments Data:", departmentsData);
-  console.log(
-    "Project Departments:",
-    projects.map((p) => p.departments)
-  );
+  // API 호출 및 데이터 가져오기
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/projects");
+        setProjects(response.data); // API에서 가져온 데이터를 상태에 저장
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   // 카테고리에 맞는 프로젝트 필터링
   const filteredProjects = normalizedCategory
@@ -88,9 +45,6 @@ const Team = () => {
         })
       )
     : projects;
-
-  console.log("Normalized Category:", normalizedCategory);
-  console.log("Filtered Projects:", filteredProjects);
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
@@ -120,7 +74,7 @@ const Team = () => {
     <Container>
       <Search />
       <Title>
-        <Header>{category ? `${category}` : "all"}</Header>
+        <Header>{category ? `${category} 프로젝트` : "전체 프로젝트"}</Header>
         <AddButton onClick={goToCreateTeamPage}>
           <AiOutlinePlusCircle />
         </AddButton>
@@ -184,7 +138,7 @@ const Title = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 
   @media (max-width: 480px) {
     flex-direction: column;
@@ -239,7 +193,7 @@ const TeamWrapper = styled.div`
   gap: 24px;
   flex-grow: 1;
 
-  @media (min-width: 1024px) {
+  @media (min-width: 1025px) {
     grid-template-columns: repeat(3, 1fr);
   }
 

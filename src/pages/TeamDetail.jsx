@@ -1,30 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { MdMoreVert } from "react-icons/md";
+import axios from "axios";
 import EditTeamForm from "../components/EditTeamForm";
-
-const dummyTeamData = {
-  id: 1,
-  userId: 1,
-  date: "2023-07-15",
-  difficulty: "중간",
-  title: "팀 프로젝트 제목",
-  tag: "#태그",
-  author: "작성자명",
-  projectDescription: "프로젝트에 대한 상세 설명입니다.",
-  fieldAndMembers: "프론트엔드 2명, 백엔드 1명",
-  deadline: "2023-08-31",
-  fields: [
-    { field: "프론트", members: 2 },
-    { field: "백", members: 1 },
-  ],
-  description: "프로젝트 설명",
-};
+import { useParams } from "react-router-dom"; // React Router를 사용하는 경우
 
 const TeamDetail = () => {
+  const { id } = useParams(); // URL 파라미터에서 id를 가져옴
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [teamData, setTeamData] = useState(dummyTeamData); // 더미 데이터 사용
+  const [teamData, setTeamData] = useState(null); // 초기값 null
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/projects/${id}`
+        );
+        const data = response.data;
+
+        const formattedData = {
+          id: data.id,
+          date: data.createdAt.split("T")[0],
+          difficulty: `난이도 ${data.difficult}`,
+          title: data.title,
+          tag: "#프로젝트",
+          author: data.user.username,
+          projectDescription: data.description,
+          fieldAndMembers: data.fields
+            .map((field) => `${field.department}번 분야 ${field.range}명`)
+            .join(", "),
+          deadline: data.deadline,
+        };
+
+        setTeamData(formattedData);
+      } catch (error) {
+        console.error("데이터 가져오기 실패:", error);
+      } finally {
+        setIsLoading(false); // 로딩 종료
+      }
+    };
+
+    if (id) {
+      fetchTeamData();
+    }
+  }, [id]);
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -34,6 +55,14 @@ const TeamDetail = () => {
     setIsEditMode(true);
     setIsMenuOpen(false);
   };
+
+  if (isLoading) {
+    return <div>로딩 중...</div>; // 로딩 메시지
+  }
+
+  if (!teamData) {
+    return <div>데이터를 불러오지 못했습니다.</div>; // 오류 처리
+  }
 
   return (
     <Container>
@@ -78,7 +107,7 @@ const TeamDetail = () => {
             <Detail>{teamData.projectDescription}</Detail>
           </DetailLayout>
           <DetailLayout>
-            <DetailTitle>구하는 분야 및 인원?</DetailTitle>
+            <DetailTitle>구하는 분야 및 인원</DetailTitle>
             <Detail>{teamData.fieldAndMembers}</Detail>
           </DetailLayout>
           <DetailLayout>
@@ -93,6 +122,10 @@ const TeamDetail = () => {
 };
 
 export default TeamDetail;
+
+// 스타일 컴포넌트는 기존 코드 그대로 사용
+
+// 스타일 컴포넌트는 기존 코드 그대로 사용
 
 // 스타일 컴포넌트 정의
 const Container = styled.div`

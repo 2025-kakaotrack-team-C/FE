@@ -7,6 +7,7 @@ import {
   IoIosRemoveCircle,
 } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { getCookie } from "../utils/Cookie";
 
 function CreateTeam() {
   const [fields, setFields] = useState([]);
@@ -48,7 +49,6 @@ function CreateTeam() {
     };
 
     const projectData = {
-      userId: 1,
       title,
       description,
       difficult: parseInt(difficulty, 10),
@@ -61,9 +61,11 @@ function CreateTeam() {
     };
 
     try {
+      const token = getCookie("token");
       const response = await axios.post("api/projects", projectData, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log("응답 데이터:", response.data);
