@@ -15,7 +15,15 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
   const [description, setDescription] = useState(
     existingData.description || ""
   );
-  const [difficulty, setDifficulty] = useState(existingData.difficulty || "");
+  const initialDifficultyMapping = {
+    쉬움: "1",
+    중간: "2",
+    어려움: "3",
+  };
+  const [difficulty, setDifficulty] = useState(
+    initialDifficultyMapping[existingData.difficulty] || ""
+  );
+
   const [year, setYear] = useState(
     existingData.deadline ? existingData.deadline.split("-")[0] : ""
   );
@@ -291,8 +299,8 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
       </DetailLayout>
 
       <ButtonLayout>
-        <Button onClick={handleSubmit}>수정 완료</Button>
-        <Button1 onClick={onCancel}>취소</Button1>
+        <Button onClick={handleSubmit}>수정</Button>
+        <Button1 onClick={onCancel}>닫기</Button1>
       </ButtonLayout>
     </Container>
   );
@@ -300,13 +308,12 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
 
 export default EditTeamForm;
 
-// 스타일 컴포넌트 정의 (CreateTeam과 동일하게 재사용)
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-content: center;
-  min-height: 100vh; /* 높이를 최소 화면 크기로 설정 */
+  min-height: 100vh;
   padding: 24px;
   margin: auto;
   max-width: 1440px;
@@ -458,16 +465,15 @@ const ButtonLayout = styled.div`
 `;
 
 const Button = styled.button`
-  width: 100px;
-  height: 50px;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 24px;
+  width: 122px;
+  height: 56px;
   background-color: #dcdaf5;
   color: #21005d;
+  font-size: 20px;
+  border-radius: 24px;
+  padding: 16px 24px;
   cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 
   &:hover {
     background-color: #21005d;
@@ -476,16 +482,20 @@ const Button = styled.button`
 `;
 
 const Button1 = styled.button`
-  width: 100px;
-  height: 50px;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 24px;
+  width: 122px;
+  height: 56px;
   background-color: #f2ecee;
   color: #787579;
+  font-size: 20px;
+  border-radius: 24px;
+  padding: 16px 24px;
   cursor: pointer;
+  /* margin-left: auto; */
+  transition: background-color 0.3s, color 0.3s;
+  &:hover {
+    background-color: #f2ecee;
+    color: #787579;
+  }
 
   &:hover {
     background-color: #787579;

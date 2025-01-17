@@ -120,7 +120,7 @@ const Team = () => {
     <Container>
       <Search />
       <Title>
-        <Header>{category ? `${category} 프로젝트` : "전체 프로젝트"}</Header>
+        <Header>{category ? `${category}` : "all"}</Header>
         <AddButton onClick={goToCreateTeamPage}>
           <AiOutlinePlusCircle />
         </AddButton>
@@ -184,7 +184,7 @@ const Title = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 
   @media (max-width: 480px) {
     flex-direction: column;
@@ -239,7 +239,7 @@ const TeamWrapper = styled.div`
   gap: 24px;
   flex-grow: 1;
 
-  @media (min-width: 1025px) {
+  @media (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
