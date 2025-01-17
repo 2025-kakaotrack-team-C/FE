@@ -25,11 +25,11 @@ function MyPage() {
   const [github, setGithub] = useState("https://github.com/username");
 
   const fieldOptions = [
-    { id: "nonMajor", label: "비전공" },
+    { id: "nonMajor", label: "AI" },
     { id: "frontend", label: "프론트엔드" },
     { id: "backend", label: "백엔드" },
-    { id: "fullstack", label: "풀스택" },
-    { id: "etc", label: "기타" },
+    { id: "fullstack", label: "앱" },
+    { id: "etc", label: "게임" },
   ];
   const toggleField = (id) => {
     setFields((prevFields) => {
@@ -185,7 +185,10 @@ function MyPage() {
       <Header>내 정보</Header>
       <InfoCard>
         <NameContainer>
-          <Name>{name}</Name>
+          <NameWrapper>
+            <Name>{name}</Name>
+            {editing && <DeleteButton>탈퇴하기</DeleteButton>}
+          </NameWrapper>
           <Email>{email}</Email>
         </NameContainer>
 
@@ -199,10 +202,7 @@ function MyPage() {
                   onChange={(e) => setMajor(e.target.value)}
                 >
                   <option value="비전공">비전공</option>
-                  <option value="컴퓨터공학">컴퓨터공학</option>
-                  <option value="전자공학">전자공학</option>
-                  <option value="기타 이공계">기타 이공계</option>
-                  <option value="인문/사회/예체능">인문/사회/예체능</option>
+                  <option value="전공">전공</option>
                 </Select>
               ) : (
                 <InfoContent>{major}</InfoContent>
@@ -482,6 +482,20 @@ const NameContainer = styled.div`
   margin-bottom: 16px;
 `;
 
+const NameWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+const DeleteButton = styled.button`
+  color: #ff6140;
+  font-size: 16px;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+`;
+
 const Name = styled.div`
   font-size: 24px;
   font-weight: bold;
@@ -532,17 +546,19 @@ const InfoContent = styled.div`
 `;
 
 const EditButton = styled.button`
-  background-color: #eee7ff;
-  border: none;
-  border-radius: 8px;
-  color: #7a5fef;
-  font-size: 14px;
-  font-weight: bold;
-  padding: 10px 20px;
+  width: 122px;
+  height: 56px;
+  background-color: #dcdaf5;
+  color: #21005d;
+  font-size: 20px;
+  border-radius: 24px;
+  padding: 16px 24px;
   cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
   align-self: flex-end;
   &:hover {
-    background-color: #d8cfff;
+    background-color: #21005d;
+    color: #dcdaf5;
   }
 `;
 

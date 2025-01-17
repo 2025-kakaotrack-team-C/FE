@@ -445,16 +445,15 @@ const ButtonLayout = styled.div`
 `;
 
 const Button = styled.button`
-  width: 100px;
-  height: 50px;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 24px;
+  width: 122px;
+  height: 56px;
   background-color: #dcdaf5;
   color: #21005d;
+  font-size: 20px;
+  border-radius: 24px;
+  padding: 16px 24px;
   cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 
   &:hover {
     background-color: #21005d;
@@ -463,16 +462,20 @@ const Button = styled.button`
 `;
 
 const Button1 = styled.button`
-  width: 100px;
-  height: 50px;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 24px;
+  width: 122px;
+  height: 56px;
   background-color: #f2ecee;
   color: #787579;
+  font-size: 20px;
+  border-radius: 24px;
+  padding: 16px 24px;
   cursor: pointer;
+  /* margin-left: auto; */
+  transition: background-color 0.3s, color 0.3s;
+  &:hover {
+    background-color: #f2ecee;
+    color: #787579;
+  }
 
   &:hover {
     background-color: #787579;
