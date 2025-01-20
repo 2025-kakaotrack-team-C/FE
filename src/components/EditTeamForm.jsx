@@ -25,6 +25,7 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
   };
 
   useEffect(() => {
+    console.log("existingData: ", existingData);
     if (existingData) {
       setTitle(existingData.title || "");
       setDescription(
@@ -42,6 +43,7 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
       }
       setFields(
         existingData.fields.map((field) => ({
+          fieldId: field.fieldId,
           field:
             Object.keys(departmentMapping).find(
               (key) => departmentMapping[key] === field.department
@@ -50,6 +52,7 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
         }))
       );
     }
+    console.log("EditTeamForm - existingData:", existingData);
   }, [existingData]);
 
   // 핸들러: 필드를 변경할 때 사용하는 함수
@@ -85,9 +88,9 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
       description,
       difficult: parseInt(difficulty, 10), // 난이도를 숫자로 변환
       deadline: `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`, // 날짜 형식
-      fields: fields.map((field, index) => ({
-        fieldId: index + 1, // 필드 ID는 배열의 순서로 부여
-        department: departmentMapping[field.field], // 부서 매핑
+      fields: fields.map((field) => ({
+        fieldId: field.fieldId, // 여기서 필드 ID도 함께 보내줍니다
+        department: departmentMapping[field.field], // 부서 숫자
         range: field.members, // 인원 수
       })),
     };
