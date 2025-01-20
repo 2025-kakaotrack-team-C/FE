@@ -59,21 +59,34 @@ function CreateTeam() {
         range: field.members,
       })),
     };
-
+    console.log("보내는 데이터:", projectData);
+    console.log("보내는 데이터:", JSON.stringify(projectData, null, 2));
     try {
       const token = getCookie("token");
-      const response = await axios.post("api/projects", projectData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        "http://3.34.170.189:8080/api/projects",
+        projectData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       console.log("응답 데이터:", response.data);
-      alert("데이터가 성공적으로 전송되었습니다!");
+      navigate(`/`);
     } catch (error) {
-      console.error("에러 발생:", error);
-      alert("데이터 전송 중 에러가 발생했습니다.");
+      if (
+        error.response &&
+        error.response.status >= 200 &&
+        error.response.status < 300
+      ) {
+        // 200번대 응답은 무시
+        console.log("200번대 응답, 에러 처리 안 함:", error.response.status);
+        return;
+      }
     }
+    navigate(`/`);
   };
 
   return (
