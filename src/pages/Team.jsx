@@ -81,7 +81,7 @@ const Team = () => {
     <Container>
       <Search />
       <Title>
-        <Header>{category ? `${category} 프로젝트` : "전체 프로젝트"}</Header>
+        <Header>{category ? `${category}` : "ALL"}</Header>
         <AddButton onClick={goToCreateTeamPage}>
           <AiOutlinePlusCircle />
         </AddButton>
@@ -99,7 +99,7 @@ const Team = () => {
             </FieldLayout>
             <TeamTitle>{project.title}</TeamTitle>
             <TeamInfo>
-              <div>참여 인원: {project.totalRange}</div>
+              <div>참여 인원: 0/{project.totalRange}</div>
               <div>마감일: {project.deadline}</div>
             </TeamInfo>
           </TeamBorder>
@@ -127,7 +127,7 @@ const Container = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   padding: 24px;
   margin: 0 auto;
   max-width: 1440px;

@@ -140,19 +140,36 @@ export default MyPostsSection;
 /* =============================== */
 /* styled-components 부분         */
 /* =============================== */
+/* (1) 공통 스타일 믹스인 */
 
 const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
+
+  @media (max-width: 768px) {
+    align-items: center;
+  }
+
+  @media (max-width: 480px) {
+    align-items: center;
+  }
 `;
 
 const Header = styled.h2`
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
   margin-bottom: 16px;
   font-family: "yg-jalnan", sans-serif;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+  }
 `;
 
 const FilterIcon = styled.div`
@@ -165,9 +182,11 @@ const FilterIcon = styled.div`
   }
 `;
 
+/* 필터 메뉴 (드롭다운) */
 const FilterMenu = styled.div`
   position: absolute;
   top: 50%;
+  /* left: 0; */
   right: 0;
   margin-top: 8px;
   background-color: #fff;
@@ -197,8 +216,19 @@ const InfoCard = styled.div`
   flex-direction: column;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+  }
 `;
 
+/* =============================== */
+/* (5) 내가 쓴 공고 (슬라이더)   */
+/* =============================== */
 const SliderWrapper = styled.div`
   position: relative;
   overflow: hidden;
@@ -211,6 +241,16 @@ const SliderTrack = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   transform: translateX(${({ currentSlide }) => `-${currentSlide * 100}%`});
   transition: transform 0.3s ease;
+
+  @media (max-width: 768px) {
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  @media (max-width: 480px) {
+    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
 `;
 
 const SliderButton = styled.button`
@@ -218,6 +258,7 @@ const SliderButton = styled.button`
   top: 50%;
   transform: translateY(-50%);
   font-size: 24px;
+  /* background-color: rgba(255, 255, 255, 0.7); */
   border: none;
   cursor: pointer;
   padding: 8px;
@@ -227,6 +268,7 @@ const SliderButton = styled.button`
   &:first-of-type {
     left: 16px;
   }
+
   &:last-of-type {
     right: 16px;
   }
@@ -249,6 +291,16 @@ const PostCard = styled.div`
   &:hover {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
   }
+
+  @media (max-width: 768px) {
+    width: calc(100% - 32px);
+    margin: 0 auto;
+  }
+
+  @media (max-width: 480px) {
+    width: calc(100% - 16px);
+    margin: 8px auto;
+  }
 `;
 
 const FieldContainer = styled.div`
@@ -256,6 +308,16 @@ const FieldContainer = styled.div`
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 480px) {
+    gap: 4px;
+    justify-content: flex-start;
+  }
 `;
 
 const FieldChip = styled.div`
@@ -264,6 +326,7 @@ const FieldChip = styled.div`
   font-size: 14px;
   font-weight: 600;
 
+  /* 간단히 필드명에 따라 색상 다르게 예시 */
   background-color: ${({ field }) =>
     field === "백엔드"
       ? "#39D372" // 녹색

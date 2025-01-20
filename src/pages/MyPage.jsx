@@ -364,8 +364,14 @@ function MyPage() {
                   value={github}
                   onChange={(e) => setGithub(e.target.value)}
                 />
+              ) : github ? (
+                <InfoContent>
+                  <a href={github} target="_blank" rel="noopener noreferrer">
+                    {github}
+                  </a>
+                </InfoContent>
               ) : (
-                <InfoContent>{github}</InfoContent>
+                <InfoContent>깃허브 없음</InfoContent>
               )}
             </InfoColumn>
           </InfoRow>
@@ -417,7 +423,7 @@ const Container = styled.div`
 `;
 
 const Header = styled.h2`
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
   margin-bottom: 16px;
   font-family: "yg-jalnan", sans-serif;
