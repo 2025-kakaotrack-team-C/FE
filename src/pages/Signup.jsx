@@ -112,7 +112,7 @@ function Signup() {
   const handleSignup = async () => {
     try {
       const response = await axios.post(
-        "http://3.34.170.189:8080/members/sign-up",
+        `${process.env.REACT_APP_API_URL}/members/sign-up`,
         {
           username: email,
           password: password,

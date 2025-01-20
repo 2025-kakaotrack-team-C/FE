@@ -101,7 +101,7 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
     try {
       const token = getCookie("token");
       const response = await axios.put(
-        `http://3.34.170.189:8080/api/project/${existingData.id}`,
+        `${process.env.REACT_APP_API_URL}/api/projects/${existingData.id}`,
         projectData,
         {
           headers: {

@@ -27,7 +27,7 @@ const Team = () => {
     const fetchProjects = async () => {
       try {
         const response = await axios.get(
-          "http://3.34.170.189:8080/api/projects"
+          `${process.env.REACT_APP_API_URL}/api/projects`
         );
 
         // 최근 게시물이 맨 앞으로 오도록 내림차순 정렬

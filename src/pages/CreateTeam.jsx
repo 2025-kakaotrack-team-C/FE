@@ -64,7 +64,7 @@ function CreateTeam() {
     try {
       const token = getCookie("token");
       const response = await axios.post(
-        "http://3.34.170.189:8080/api/projects",
+        `${process.env.REACT_APP_API_URL}/api/projects`,
         projectData,
         {
           headers: {

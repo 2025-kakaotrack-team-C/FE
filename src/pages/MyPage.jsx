@@ -154,11 +154,15 @@ function MyPage() {
       console.log("PATCH bodyData:", bodyData);
 
       // (c) PATCH 요청
-      await axios.patch("http://3.34.170.189:8080/api/mypage", bodyData, {
-        headers: {
-          Authorization: `Bearer ${token}`, // 토큰 추가
-        },
-      });
+      await axios.patch(
+        `${process.env.REACT_APP_API_URL}/api/mypage`,
+        bodyData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 토큰 추가
+          },
+        }
+      );
 
       // (d) 성공 시
       setEditing(false);

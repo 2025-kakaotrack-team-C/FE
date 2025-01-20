@@ -119,7 +119,7 @@ function Login() {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        "http://3.34.170.189:8080/members/sign-in",
+        `${process.env.REACT_APP_API_URL}/members/sign-in`,
         {
           username: email,
           password: password,

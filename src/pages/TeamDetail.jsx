@@ -26,7 +26,7 @@ const TeamDetail = () => {
     const fetchTeamData = async () => {
       try {
         const response = await axios.get(
-          `http://3.34.170.189:8080/api/projects/${id}`
+          `${process.env.REACT_APP_API_URL}/api/projects/${id}`
         );
         const data = response.data;
 
