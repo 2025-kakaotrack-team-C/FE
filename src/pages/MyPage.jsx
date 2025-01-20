@@ -1,57 +1,206 @@
-import React, { useState } from "react";
+// MyPage.jsx
+import React, { useState, useEffect } from "react";
 import styled, { css } from "styled-components";
-// 예시 아이콘
 import {
   FaJsSquare,
   FaPython,
   FaJava,
-  FaReact,
-  FaChevronLeft,
-  FaChevronRight,
-  FaFilter,
+  FaCode, // C++ / C#에 사용 (임의 아이콘)
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { getCookie } from "../utils/Cookie";
+
+import MyPosts from "../components/MyPosts";
 
 function MyPage() {
   const navigate = useNavigate();
 
-  // 1) 이름, 이메일
-  const name = "홍길동";
-  const email = "sdlkjdfjd@naver.com";
-
-  // 2) 전공, 분야, 깃허브
-  const [major, setMajor] = useState("비전공");
+  // ---------------------------
+  // 1) state: 서버에서 가져올/보여줄 데이터
+  // ---------------------------
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [major, setMajor] = useState("");
+  const [github, setGithub] = useState("");
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [fields, setFields] = useState([]);
-  const [github, setGithub] = useState("https://github.com/username");
 
-  const fieldOptions = [
-    { id: "nonMajor", label: "AI" },
-    { id: "frontend", label: "프론트엔드" },
-    { id: "backend", label: "백엔드" },
-    { id: "fullstack", label: "앱" },
-    { id: "etc", label: "게임" },
-  ];
-  const toggleField = (id) => {
-    setFields((prevFields) => {
-      if (prevFields.includes(id)) {
-        return prevFields.filter((fieldId) => fieldId !== id);
-      }
-      return [...prevFields, id];
-    });
+  // ---------------------------
+  // 2) 언어/분야 매핑 객체
+  // ---------------------------
+  // 2-1) 서버 → 프론트 (숫자 → 문자열)
+  const languageMapping = {
+    1: "python",
+    2: "javascript",
+    3: "java",
+    4: "c++",
+    5: "c#",
+  };
+  const departmentMapping = {
+    1: "ai", // AI
+    2: "frontend",
+    3: "backend",
+    4: "app", // 앱
+    5: "game", // 게임
   };
 
-  // 3) 언어 여러 개 선택
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  // 2-2) 프론트 → 서버 (문자열 → 숫자)
+  const languageMappingReverse = {
+    python: 1,
+    javascript: 2,
+    java: 3,
+    "c++": 4,
+    "c#": 5,
+  };
+  const departmentMappingReverse = {
+    ai: 1,
+    frontend: 2,
+    backend: 3,
+    app: 4,
+    game: 5,
+  };
+
+  // ---------------------------
+  // 3) 서버에서 GET으로 초기 데이터 불러오기
+  // ---------------------------
+  useEffect(() => {
+    const token = getCookie("token");
+    axios
+      .get("http://3.34.170.189:8080/api/mypage", {
+        headers: {
+          Authorization: `Bearer ${token}`, // 토큰 추가
+        },
+      })
+      .then((res) => {
+        const data = res.data;
+        console.log("GET mypage data:", data);
+
+        // 예시 응답:
+        // {
+        //   "username": "tkdrud@naver.com",
+        //   "major": "Computer Science",
+        //   "github": "https://github.com/2025-kakaotrack-team-C/BE/pull/10",
+        //   "language": [1,4],
+        //   "department": [3,5]
+        // }
+
+        // (a) 기본 정보
+        setName(data.username || "");
+        setEmail(data.email || ""); // email이 따로 있을 경우
+        setMajor(data.major || "비전공");
+        setGithub(data.github || "");
+
+        // (b) 언어 (숫자 ID 배열 → 문자열 배열)
+        if (Array.isArray(data.language)) {
+          const mappedLangs = data.language
+            .map((numId) => languageMapping[numId])
+            .filter(Boolean); // 매핑 안되는 값은 제외
+          setSelectedLanguages(mappedLangs);
+        }
+
+        // (c) 분야 (숫자 ID 배열 → 문자열 배열)
+        if (Array.isArray(data.department)) {
+          const mappedDeps = data.department
+            .map((numId) => departmentMapping[numId])
+            .filter(Boolean);
+          setFields(mappedDeps);
+        }
+      })
+      .catch((err) => {
+        console.error("마이페이지 데이터 불러오기 실패:", err);
+      });
+  }, []);
+
+  // ---------------------------
+  // 4) 수정 모드 (edit / save)
+  // ---------------------------
+  const [editing, setEditing] = useState(false);
+
+  const handleEditToggle = () => {
+    // "수정" → editing = true
+    // "저장" → PATCH 후 editing = false
+    if (editing) {
+      handleSave(); // 저장 로직
+    } else {
+      setEditing(true);
+    }
+  };
+
+  // ---------------------------
+  // 5) PATCH 요청 (수정 사항 저장)
+  // ---------------------------
+  const handleSave = async () => {
+    try {
+      const token = getCookie("token");
+
+      // (a) 문자열 배열 → 숫자 배열
+      const languageIds = selectedLanguages
+        .map((langStr) => languageMappingReverse[langStr]) // 언어 매핑
+        .filter(Boolean);
+
+      const departmentIds = fields
+        .map((depStr) => departmentMappingReverse[depStr]) // 분야 매핑
+        .filter(Boolean);
+
+      // (b) 서버에 전송할 body
+      const bodyData = {
+        github, // 깃허브 URL
+        major, // 전공
+        language: languageIds, // 언어 ID 배열
+        department: departmentIds, // 분야 ID 배열
+      };
+
+      console.log("PATCH bodyData:", bodyData);
+
+      // (c) PATCH 요청
+      await axios.patch("http://3.34.170.189:8080/api/mypage", bodyData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // 토큰 추가
+        },
+      });
+
+      // (d) 성공 시
+      setEditing(false);
+      alert("수정사항이 저장되었습니다.");
+    } catch (error) {
+      console.error("마이페이지 수정 실패:", error);
+      alert("수정 중 오류가 발생했습니다.");
+    }
+  };
+
+  // ---------------------------
+  // 6) 체크박스 / 아이콘 토글
+  // ---------------------------
+  // 분야 체크박스 목록 (프론트에서 사용하는 문자열 ID와 라벨)
+  const fieldOptions = [
+    { id: "ai", label: "AI" },
+    { id: "frontend", label: "프론트엔드" },
+    { id: "backend", label: "백엔드" },
+    { id: "app", label: "앱" },
+    { id: "game", label: "게임" },
+  ];
+
+  const toggleField = (id) => {
+    setFields((prev) =>
+      prev.includes(id)
+        ? prev.filter((fieldId) => fieldId !== id)
+        : [...prev, id]
+    );
+  };
+
+  // 언어 아이콘 목록 (프론트에서 사용하는 문자열 ID와 라벨)
+  // *C++ / C# 은 FaCode 아이콘으로 임시 적용
   const languageOptions = [
-    {
-      id: "javascript",
-      label: "JavaScript",
-      icon: <FaJsSquare size={24} color="#f7df1e" />,
-    },
     {
       id: "python",
       label: "Python",
       icon: <FaPython size={24} color="#3776ab" />,
+    },
+    {
+      id: "javascript",
+      label: "JavaScript",
+      icon: <FaJsSquare size={24} color="#f7df1e" />,
     },
     {
       id: "java",
@@ -59,42 +208,38 @@ function MyPage() {
       icon: <FaJava size={24} color="#007396" />,
     },
     {
-      id: "react",
-      label: "React",
-      icon: <FaReact size={24} color="#61dafb" />,
+      id: "c++",
+      label: "C++",
+      icon: <FaCode size={24} />, // 원하는 아이콘으로 교체 가능
+    },
+    {
+      id: "c#",
+      label: "C#",
+      icon: <FaCode size={24} />, // 원하는 아이콘으로 교체 가능
     },
   ];
+
   const toggleLanguage = (langId) => {
-    setSelectedLanguages((prev) => {
-      if (prev.includes(langId)) {
-        return prev.filter((id) => id !== langId);
-      }
-      return [...prev, langId];
-    });
+    setSelectedLanguages((prev) =>
+      prev.includes(langId)
+        ? prev.filter((id) => id !== langId)
+        : [...prev, langId]
+    );
   };
 
-  // 수정 모드
-  const [editing, setEditing] = useState(false);
-  const handleEditToggle = () => setEditing((prev) => !prev);
-
-  // ===============================
-  // (기존) 내가 쓴 공고 데이터
-  // ===============================
+  // ---------------------------
+  // 7) 게시물 예시 (UI 확인용)
+  // ---------------------------
   const myPosts = [
     { id: 1, fields: ["백엔드", "프론트"], title: "웹개발 하실?" },
     { id: 2, fields: ["백엔드", "프론트"], title: "웹개발 하실?" },
     { id: 3, fields: ["백엔드", "프론트"], title: "웹개발 하실?" },
     { id: 4, fields: ["백엔드", "프론트"], title: "웹개발 하실?" },
   ];
-
-  // ===============================
-  // 새롭게 추가할 데이터 예시
-  // ===============================
   const appliedPosts = [
     { id: 11, fields: ["백엔드"], title: "지원한 백엔드 공고" },
     { id: 12, fields: ["프론트"], title: "지원한 프론트엔드 공고" },
   ];
-
   const myProjects = [
     { id: 21, fields: ["백엔드"], title: "이전에 완료한 백엔드 프로젝트" },
     {
@@ -103,80 +248,13 @@ function MyPage() {
       title: "이전에 완료한 풀스택 프로젝트",
     },
   ];
-
   const ongoingProjects = [
     { id: 31, fields: ["프론트"], title: "지금 진행 중인 프론트 프로젝트" },
   ];
 
+  // 상세 페이지 이동 함수
   const goToPostDetail = (postId) => {
     navigate(`/post/${postId}`);
-  };
-
-  /* 
-    ===============================
-    슬라이더 관련 상태 & 로직
-    ===============================
-  */
-  // 현재 슬라이드 인덱스
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  // 화면에 한 번에 보일 카드(박스) 개수
-  const VISIBLE_CARDS = 3;
-
-  // 다음 슬라이드
-  const handleNext = () => {
-    // 슬라이드 할 수 있는 마지막 인덱스 = (총개수 - VISIBLE_CARDS)
-    if (currentSlide < getFilteredData().length - VISIBLE_CARDS) {
-      setCurrentSlide((prev) => prev + 1);
-    }
-  };
-
-  // 이전 슬라이드
-  const handlePrev = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide((prev) => prev - 1);
-    }
-  };
-
-  // ===============================
-  // (새로 추가) 필터 상태 & 함수
-  // ===============================
-  const [filter, setFilter] = useState("myPosts"); // 기본값: 내가 쓴 공고
-  const [showFilterMenu, setShowFilterMenu] = useState(false); // 메뉴 표시 여부
-
-  // 필터 메뉴 열기/닫기
-  const handleFilterMenuToggle = () => {
-    setShowFilterMenu((prev) => !prev);
-  };
-
-  // 필터 항목 선택 시
-  const handleFilterSelect = (selectedFilter) => {
-    setFilter(selectedFilter);
-    setShowFilterMenu(false);
-    setCurrentSlide(0); // 필터가 바뀔 때마다 슬라이드를 처음으로 초기화
-  };
-
-  // 현재 선택된 필터 상태에 따라 데이터를 리턴
-  const getFilteredData = () => {
-    if (filter === "appliedPosts") return appliedPosts;
-    if (filter === "myProjects") return myProjects;
-    if (filter === "ongoingProjects") return ongoingProjects;
-    return myPosts; // 기본값: 내가 쓴 공고
-  };
-
-  // 현재 필터 상태에 따라 헤더 문구 변경 (옵션)
-  const getHeaderTitle = () => {
-    switch (filter) {
-      case "appliedPosts":
-        return "내가 지원한 공고";
-      case "myProjects":
-        return "내가 한 프로젝트";
-      case "ongoingProjects":
-        return "내가 진행 중인 프로젝트";
-      case "myPosts":
-      default:
-        return "내가 쓴 공고";
-    }
   };
 
   return (
@@ -192,6 +270,7 @@ function MyPage() {
           <Email>{email}</Email>
         </NameContainer>
 
+        {/* ----- 전공, 분야, 언어, 깃허브 ----- */}
         <InfoSection>
           <InfoRow>
             <InfoColumn>
@@ -202,12 +281,13 @@ function MyPage() {
                   onChange={(e) => setMajor(e.target.value)}
                 >
                   <option value="비전공">비전공</option>
-                  <option value="전공">전공</option>
+                  <option value="Computer Science">전공</option>
                 </Select>
               ) : (
                 <InfoContent>{major}</InfoContent>
               )}
             </InfoColumn>
+
             <InfoColumn>
               <InfoTitle>분야</InfoTitle>
               {editing ? (
@@ -286,69 +366,21 @@ function MyPage() {
             </InfoColumn>
           </InfoRow>
         </InfoSection>
+
+        {/* ----- 수정/저장 버튼 ----- */}
         <EditButton onClick={handleEditToggle}>
           {editing ? "저장" : "수정"}
         </EditButton>
       </InfoCard>
 
-      {/* ================================
-        내가 쓴 공고 + 필터 아이콘 영역
-      ================================ */}
-      <HeaderWrapper>
-        <Header>{getHeaderTitle()}</Header>
-        <FilterIcon onClick={handleFilterMenuToggle}>
-          <FaFilter />
-        </FilterIcon>
-
-        {/* 필터 메뉴 (드롭다운) */}
-        {showFilterMenu && (
-          <FilterMenu>
-            <FilterMenuItem onClick={() => handleFilterSelect("myPosts")}>
-              내가 쓴 공고
-            </FilterMenuItem>
-            <FilterMenuItem onClick={() => handleFilterSelect("appliedPosts")}>
-              내가 지원한 공고
-            </FilterMenuItem>
-            <FilterMenuItem onClick={() => handleFilterSelect("myProjects")}>
-              내가 한 프로젝트
-            </FilterMenuItem>
-            <FilterMenuItem
-              onClick={() => handleFilterSelect("ongoingProjects")}
-            >
-              내가 진행 중인 프로젝트
-            </FilterMenuItem>
-          </FilterMenu>
-        )}
-      </HeaderWrapper>
-
-      {/* ----- 슬라이더 ----- */}
-      <InfoCard>
-        <SliderWrapper>
-          <SliderButton onClick={handlePrev}>
-            <FaChevronLeft />
-          </SliderButton>
-
-          <SliderTrack currentSlide={currentSlide}>
-            {/* 필터 상태에 따라 반환된 데이터로 카드 렌더링 */}
-            {getFilteredData().map((post) => (
-              <PostCard key={post.id} onClick={() => goToPostDetail(post.id)}>
-                <FieldContainer>
-                  {post.fields.map((field) => (
-                    <FieldChip key={field} field={field}>
-                      {field}
-                    </FieldChip>
-                  ))}
-                </FieldContainer>
-                <PostTitle>{post.title}</PostTitle>
-              </PostCard>
-            ))}
-          </SliderTrack>
-
-          <SliderButton onClick={handleNext}>
-            <FaChevronRight />
-          </SliderButton>
-        </SliderWrapper>
-      </InfoCard>
+      {/* ----- 내가 작성한 공고, 지원/진행 공고 ----- */}
+      <MyPosts
+        myPosts={myPosts}
+        appliedPosts={appliedPosts}
+        myProjects={myProjects}
+        ongoingProjects={ongoingProjects}
+        goToPostDetail={goToPostDetail}
+      />
     </Container>
   );
 }
@@ -362,11 +394,12 @@ export default MyPage;
 /* (1) 공통 스타일 믹스인 */
 const sameHeightStyle = css`
   height: 62.5px;
-  line-height: 40px; /* 세로 가운데 정렬을 위한 line-height */
+  line-height: 40px;
   border-radius: 24px;
   font-size: 16px;
 `;
 
+/* (2) 기본 레이아웃 */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -377,32 +410,6 @@ const Container = styled.div`
   margin: 0 auto;
   max-width: 1440px;
   width: 100%;
-
-  @media (max-width: 768px) {
-    padding: 16px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 12px;
-  }
-`;
-/* 
-  (기존) Header를 감싸는 Wrapper를 추가하여
-  필터 아이콘을 Header 우측에 배치하기 위한 스타일 설정
-*/
-const HeaderWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-
-  @media (max-width: 768px) {
-    align-items: center;
-  }
-
-  @media (max-width: 480px) {
-    align-items: center;
-  }
 `;
 
 const Header = styled.h2`
@@ -410,50 +417,6 @@ const Header = styled.h2`
   font-weight: bold;
   margin-bottom: 16px;
   font-family: "yg-jalnan", sans-serif;
-
-  @media (max-width: 768px) {
-    font-size: 24px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 20px;
-  }
-`;
-
-const FilterIcon = styled.div`
-  font-size: 20px;
-  margin-left: 8px;
-  cursor: pointer;
-  color: #7a5fef;
-  &:hover {
-    color: #5f4fcf;
-  }
-`;
-
-/* 필터 메뉴 (드롭다운) */
-const FilterMenu = styled.div`
-  position: absolute;
-  top: 50%;
-  /* left: 0; */
-  right: 0;
-  margin-top: 8px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-`;
-
-const FilterMenuItem = styled.div`
-  padding: 12px 16px;
-  font-size: 14px;
-  color: #1c1c1d;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #f2f2f2;
-  }
 `;
 
 const InfoCard = styled.div`
@@ -464,16 +427,9 @@ const InfoCard = styled.div`
   flex-direction: column;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
-
-  @media (max-width: 768px) {
-    padding: 16px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 12px;
-  }
 `;
 
+/* (3) 상단 이름/이메일 */
 const NameContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -507,6 +463,7 @@ const Email = styled.div`
   color: #4d4256;
 `;
 
+/* (4) 전공/분야/언어/깃허브 */
 const InfoSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -517,14 +474,9 @@ const InfoRow = styled.div`
   justify-content: space-between;
   margin-bottom: 16px;
   gap: 16px;
-
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 8px;
-  }
-
-  @media (max-width: 480px) {
-    gap: 4px;
   }
 `;
 
@@ -545,6 +497,7 @@ const InfoContent = styled.div`
   font-size: 16px;
 `;
 
+/* (5) 수정/저장 버튼 */
 const EditButton = styled.button`
   width: 122px;
   height: 56px;
@@ -562,7 +515,7 @@ const EditButton = styled.button`
   }
 `;
 
-/* (2) Select와 Input에 sameHeightStyle 적용 */
+/* (6) Select/Input 공통 스타일 */
 const Select = styled.select`
   ${sameHeightStyle}
   padding: 0 12px;
@@ -575,7 +528,7 @@ const Input = styled.input`
   border: 1px solid #ccc;
 `;
 
-/* (3) 체크박스 */
+/* (7) 체크박스 */
 const CheckboxGroup = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -598,19 +551,14 @@ const Checkbox = styled.input`
   height: 20px;
 `;
 
-/* (4) 언어 아이콘 */
+/* (8) 언어 아이콘 */
 const LanguageContainer = styled.div`
   display: flex;
   gap: 12px;
   margin-bottom: 8px;
-
   @media (max-width: 768px) {
     flex-wrap: wrap;
     gap: 8px;
-  }
-
-  @media (max-width: 480px) {
-    gap: 4px;
   }
 `;
 
@@ -632,119 +580,4 @@ const LanguageIcon = styled.div`
 const IconLabel = styled.span`
   margin-top: 4px;
   font-size: 12px;
-`;
-
-/* =============================== */
-/* (5) 내가 쓴 공고 (슬라이더)   */
-/* =============================== */
-const SliderWrapper = styled.div`
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-`;
-
-const SliderTrack = styled.div`
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  transform: translateX(${({ currentSlide }) => `-${currentSlide * 100}%`});
-  transition: transform 0.3s ease;
-
-  @media (max-width: 768px) {
-    gap: 16px;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-
-  @media (max-width: 480px) {
-    gap: 8px;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  }
-`;
-
-const SliderButton = styled.button`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 24px;
-  /* background-color: rgba(255, 255, 255, 0.7); */
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  z-index: 2;
-
-  &:first-of-type {
-    left: 16px;
-  }
-
-  &:last-of-type {
-    right: 16px;
-  }
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.9);
-  }
-`;
-
-const PostCard = styled.div`
-  flex: 0 0 auto;
-  width: 250px;
-  height: 250px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  cursor: pointer;
-
-  &:hover {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  }
-
-  @media (max-width: 768px) {
-    width: calc(100% - 32px);
-    margin: 0 auto;
-  }
-
-  @media (max-width: 480px) {
-    width: calc(100% - 16px);
-    margin: 8px auto;
-  }
-`;
-
-const FieldContainer = styled.div`
-  justify-content: flex-end;
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-
-  @media (max-width: 768px) {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  @media (max-width: 480px) {
-    gap: 4px;
-    justify-content: flex-start;
-  }
-`;
-
-const FieldChip = styled.div`
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-
-  /* 간단히 필드명에 따라 색상 다르게 예시 */
-  background-color: ${({ field }) =>
-    field === "백엔드"
-      ? "#39D372" // 녹색
-      : field === "프론트"
-      ? "#FFE28C" // 노란색
-      : "#ccc"};
-  color: #1c1c1d;
-`;
-
-const PostTitle = styled.div`
-  font-size: 24px;
-  font-weight: bold;
 `;

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { MdMoreVert } from "react-icons/md";
 import axios from "axios";
 import EditTeamForm from "../components/EditTeamForm";
-import { useParams } from "react-router-dom"; // React Router를 사용하는 경우
+import { useParams } from "react-router-dom";
 
 const TeamDetail = () => {
   const { id } = useParams(); // URL 파라미터에서 id를 가져옴
@@ -12,26 +12,51 @@ const TeamDetail = () => {
   const [teamData, setTeamData] = useState(null); // 초기값 null
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
+  // 부서 데이터를 미리 정의 (부서 번호 -> 부서 이름 매핑)
+  const departmentsData = {
+    1: "ai",
+    2: "frontend",
+    3: "backend",
+    4: "app",
+    5: "game",
+    // 추가 부서 정보
+  };
+
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/projects/${id}`
+          `http://3.34.170.189:8080/api/projects/${id}`
         );
         const data = response.data;
+
+        // 난이도 매핑
+        const difficultyMapping = {
+          1: "쉬움",
+          2: "중간",
+          3: "어려움",
+        };
 
         const formattedData = {
           id: data.id,
           date: data.createdAt.split("T")[0],
-          difficulty: `난이도 ${data.difficult}`,
+          difficulty: `난이도: ${
+            difficultyMapping[data.difficult] || "알 수 없음"
+          }`,
           title: data.title,
           tag: "#프로젝트",
           author: data.user.username,
           projectDescription: data.description,
           fieldAndMembers: data.fields
-            .map((field) => `${field.department}번 분야 ${field.range}명`)
+            .map(
+              (field) =>
+                `${departmentsData[field.department] || "알 수 없음"} 분야 ${
+                  field.range
+                }명`
+            )
             .join(", "),
           deadline: data.deadline,
+          fields: data.fields, // 원래 형태로 추가
         };
 
         setTeamData(formattedData);
@@ -64,6 +89,12 @@ const TeamDetail = () => {
     return <div>데이터를 불러오지 못했습니다.</div>; // 오류 처리
   }
 
+  const difficultyColorMapping = {
+    쉬움: "#27ae60", // 초록
+    중간: "#f1c40f", // 노랑
+    어려움: "#e74c3c", // 빨강
+  };
+
   return (
     <Container>
       {isEditMode ? (
@@ -78,18 +109,26 @@ const TeamDetail = () => {
       ) : (
         <>
           <Rectangle>
-            <div>{teamData.date}</div>
+            <div>작성일 : {teamData.date}</div>
             <Header>
-              <div>{teamData.difficulty}</div>
+              <Difficulty
+                color={
+                  difficultyColorMapping[teamData.difficulty.split(": ")[1]] ||
+                  "#bdc3c7"
+                }
+              >
+                {teamData.difficulty}
+              </Difficulty>
               <Title>{teamData.title}</Title>
             </Header>
+
             <div>
               <Ttag>{teamData.tag}</Ttag>
             </div>
           </Rectangle>
           <div>
             <AuthorRow>
-              <div>{teamData.author}</div>
+              <div>작성자 : {teamData.author}</div>
               <IconWrapper onClick={toggleMenu}>
                 <MdMoreVert size={24} color="#1c1c1d" />
               </IconWrapper>
@@ -258,4 +297,14 @@ const StButton = styled.button`
     background-color: #21005d;
     color: #dcdaf5;
   }
+`;
+
+const Difficulty = styled.div`
+  font-size: 18px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  color: #ffffff;
+  background-color: ${(props) => props.color || "#bdc3c7"}; // 기본 회색
+  text-align: center;
+  display: inline-block;
 `;

@@ -26,8 +26,15 @@ const Team = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/projects");
-        setProjects(response.data); // API에서 가져온 데이터를 상태에 저장
+        const response = await axios.get(
+          "http://3.34.170.189:8080/api/projects"
+        );
+
+        // 최근 게시물이 맨 앞으로 오도록 내림차순 정렬
+        // (id가 클수록 최근 생성된 데이터라고 가정)
+        const sortedProjects = response.data.sort((a, b) => b.id - a.id);
+
+        setProjects(sortedProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }

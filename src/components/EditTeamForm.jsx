@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import {
@@ -7,33 +7,57 @@ import {
   IoIosRemoveCircle,
 } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { getCookie } from "../utils/Cookie";
 
 function EditTeamForm({ existingData, onCancel, onSave }) {
-  const [fields, setFields] = useState(existingData.fields || []);
+  const [fields, setFields] = useState([]);
   const [currentField, setCurrentField] = useState({ field: "", members: 1 });
-  const [title, setTitle] = useState(existingData.title || "");
-  const [description, setDescription] = useState(
-    existingData.description || ""
-  );
-  const initialDifficultyMapping = {
-    쉬움: "1",
-    중간: "2",
-    어려움: "3",
-  };
-  const [difficulty, setDifficulty] = useState(
-    initialDifficultyMapping[existingData.difficulty] || ""
-  );
-
-  const [year, setYear] = useState(
-    existingData.deadline ? existingData.deadline.split("-")[0] : ""
-  );
-  const [month, setMonth] = useState(
-    existingData.deadline ? existingData.deadline.split("-")[1] : ""
-  );
-  const [day, setDay] = useState(
-    existingData.deadline ? existingData.deadline.split("-")[2] : ""
-  );
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const initialDifficultyMapping = { 쉬움: "1", 중간: "2", 어려움: "3" };
+  const [difficulty, setDifficulty] = useState("");
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
+  const [day, setDay] = useState("");
   const navigate = useNavigate();
+
+  const departmentMapping = {
+    AI: 1,
+    프론트: 2,
+    백: 3,
+    앱: 4,
+    게임: 5,
+  };
+
+  useEffect(() => {
+    console.log("existingData:", existingData);
+    if (existingData) {
+      console.log("fields:", existingData.fields);
+      setTitle(existingData.title || "");
+      setDescription(
+        existingData.projectDescription || existingData.description || ""
+      );
+      // "난이도: " 제거 후 매핑
+      const difficultyValue = existingData.difficulty.split(": ")[1];
+      setDifficulty(initialDifficultyMapping[difficultyValue] || "");
+
+      if (existingData.deadline) {
+        const [yr, mn, dy] = existingData.deadline.split("-");
+        setYear(yr);
+        setMonth(String(parseInt(mn, 10))); // 앞자리 0 제거
+        setDay(dy);
+      }
+      setFields(
+        existingData.fields.map((field) => ({
+          field:
+            Object.keys(departmentMapping).find(
+              (key) => departmentMapping[key] === field.department
+            ) || "알 수 없음",
+          members: field.range,
+        }))
+      );
+    }
+  }, [existingData]);
 
   const addField = () => {
     if (currentField.field && currentField.members) {
@@ -50,45 +74,44 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
   };
 
   const handleSubmit = async () => {
+    // 유효성 검사
     if (!title || !description || !difficulty || !year || !month || !day) {
       alert("모든 필드를 입력하세요!");
       return;
     }
+    if (fields.length === 0) {
+      alert("최소 하나의 분야를 추가해주세요!");
+      return;
+    }
 
-    const fieldMapping = {
-      AI: 1,
-      프론트: 2,
-      백: 3,
-      앱: 4,
-      게임: 5,
-    };
-
+    // 데이터 변환
     const projectData = {
-      userId: existingData.userId,
       title,
       description,
-      difficult: parseInt(difficulty, 10),
-      deadline: `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`,
-      status: existingData.status,
-      fields: fields.map((field) => ({
-        department: fieldMapping[field.field],
-        range: field.members,
+      difficult: parseInt(difficulty, 10), // 난이도를 숫자로 변환
+      deadline: `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`, // 날짜 형식
+      fields: fields.map((field, index) => ({
+        fieldId: index + 1, // 필드 ID는 배열의 순서로 부여
+        department: departmentMapping[field.field], // 부서 매핑
+        range: field.members, // 인원 수
       })),
     };
-
+    console.log(projectData);
+    // API 요청
     try {
+      const token = getCookie("token");
       const response = await axios.put(
-        `/api/team/${existingData.id}`,
+        `http://3.34.170.189:8080/api/project/${existingData.id}`,
         projectData,
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log("수정된 데이터:", response.data);
+      onSave(response.data); // 수정된 데이터 부모 컴포넌트로 전달
       alert("데이터가 성공적으로 수정되었습니다!");
-      onSave(response.data); // 부모 컴포넌트에 업데이트된 데이터 전달
     } catch (error) {
       console.error("수정 중 에러 발생:", error);
       alert("데이터 수정 중 에러가 발생했습니다.");
@@ -490,13 +513,7 @@ const Button1 = styled.button`
   border-radius: 24px;
   padding: 16px 24px;
   cursor: pointer;
-  /* margin-left: auto; */
   transition: background-color 0.3s, color 0.3s;
-  &:hover {
-    background-color: #f2ecee;
-    color: #787579;
-  }
-
   &:hover {
     background-color: #787579;
     color: #f2ecee;
