@@ -166,7 +166,7 @@ const SideBar = () => {
         <>
           <SidebarProfile>
             <SideBarPicture />
-            <SideBarName>{userData.nicknam || "이름 없음"}</SideBarName>
+            <SideBarName>{userData.nickname || "이름 없음"}</SideBarName>
             <SideMajor>{userData.major}</SideMajor>
             <SideBarProgress>프로그래스바</SideBarProgress>
           </SidebarProfile>

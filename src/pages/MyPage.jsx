@@ -67,7 +67,7 @@ function MyPage() {
   useEffect(() => {
     const token = getCookie("token");
     axios
-      .get("http://3.34.170.189:8080/api/mypage", {
+      .get(`${process.env.REACT_APP_API_URL}/api/mypage`, {
         headers: {
           Authorization: `Bearer ${token}`, // 토큰 추가
         },
