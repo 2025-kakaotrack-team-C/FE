@@ -86,8 +86,8 @@ function MyPage() {
         // }
 
         // (a) 기본 정보
-        setName(data.username || "");
-        setEmail(data.email || ""); // email이 따로 있을 경우
+        setName(data.nickname || "");
+        setEmail(data.username || ""); // email이 따로 있을 경우
         setMajor(data.major || "비전공");
         setGithub(data.github || "");
 
@@ -268,7 +268,7 @@ function MyPage() {
       <InfoCard>
         <NameContainer>
           <NameWrapper>
-            <Name>{name}</Name>
+            <Name>{name || "이름 없음"}</Name>
             {editing && <DeleteButton>탈퇴하기</DeleteButton>}
           </NameWrapper>
           <Email>{email}</Email>
