@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import {
-  IoIosArrowDown,
-  IoIosAddCircle,
-  IoIosRemoveCircle,
-} from "react-icons/io";
+import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../utils/Cookie";
 
 function EditTeamForm({ existingData, onCancel, onSave }) {
   const [fields, setFields] = useState([]);
-  const [currentField, setCurrentField] = useState({ field: "", members: 1 });
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const initialDifficultyMapping = { 쉬움: "1", 중간: "2", 어려움: "3" };
@@ -30,9 +25,7 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
   };
 
   useEffect(() => {
-    console.log("existingData:", existingData);
     if (existingData) {
-      console.log("fields:", existingData.fields);
       setTitle(existingData.title || "");
       setDescription(
         existingData.projectDescription || existingData.description || ""
@@ -59,18 +52,20 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
     }
   }, [existingData]);
 
-  const addField = () => {
-    if (currentField.field && currentField.members) {
-      setFields((prevFields) => [...prevFields, { ...currentField }]);
-      setCurrentField({ field: "", members: 1 });
-    } else {
-      alert("분야와 인원을 선택해주세요!");
-    }
-  };
-
-  const removeField = (index) => {
-    const updatedFields = fields.filter((_, i) => i !== index);
-    setFields(updatedFields);
+  // 핸들러: 필드를 변경할 때 사용하는 함수
+  const handleFieldChange = (index, value, type) => {
+    setFields((prevFields) =>
+      prevFields.map((field, i) => {
+        if (i === index) {
+          if (type === "department") {
+            return { ...field, field: value };
+          } else if (type === "members") {
+            return { ...field, members: parseInt(value, 10) };
+          }
+        }
+        return field;
+      })
+    );
   };
 
   const handleSubmit = async () => {
@@ -80,7 +75,7 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
       return;
     }
     if (fields.length === 0) {
-      alert("최소 하나의 분야를 추가해주세요!");
+      alert("최소 하나의 분야가 필요합니다!");
       return;
     }
 
@@ -96,8 +91,7 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
         range: field.members, // 인원 수
       })),
     };
-    console.log(projectData);
-    // API 요청
+
     try {
       const token = getCookie("token");
       const response = await axios.put(
@@ -217,65 +211,18 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
         </Layout1>
       </DetailLayout>
 
+      {/* 분야 및 인원 (수정만 가능, 추가/삭제 불가능) */}
       <DetailLayout>
         <DetailTitle>분야 및 인원</DetailTitle>
-        <FieldRow>
-          <SelectWrapper>
-            <Select
-              value={currentField.field}
-              onChange={(e) =>
-                setCurrentField({ ...currentField, field: e.target.value })
-              }
-            >
-              <option value="" disabled>
-                분야 선택
-              </option>
-              <option value="AI">AI</option>
-              <option value="프론트">프론트</option>
-              <option value="백">백</option>
-              <option value="앱">앱</option>
-              <option value="게임">게임</option>
-            </Select>
-            <Icon>
-              <IoIosArrowDown size={24} />
-            </Icon>
-          </SelectWrapper>
-
-          <SelectWrapper>
-            <Select
-              value={currentField.members}
-              onChange={(e) =>
-                setCurrentField({
-                  ...currentField,
-                  members: parseInt(e.target.value, 10),
-                })
-              }
-            >
-              {Array.from({ length: 10 }, (_, i) => (
-                <option key={i} value={i + 1}>
-                  {i + 1}명
-                </option>
-              ))}
-            </Select>
-            <Icon>
-              <IoIosArrowDown size={24} />
-            </Icon>
-          </SelectWrapper>
-
-          <ActionButtons>
-            <IoIosAddCircle
-              size={30}
-              color="#4CAF50"
-              onClick={addField}
-              style={{ cursor: "pointer" }}
-            />
-          </ActionButtons>
-        </FieldRow>
-
         {fields.map((item, index) => (
           <FieldRow key={index}>
             <SelectWrapper>
-              <Select value={item.field} disabled>
+              <Select
+                value={item.field}
+                onChange={(e) =>
+                  handleFieldChange(index, e.target.value, "department")
+                }
+              >
                 <option value="AI">AI</option>
                 <option value="프론트">프론트</option>
                 <option value="백">백</option>
@@ -288,7 +235,12 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
             </SelectWrapper>
 
             <SelectWrapper>
-              <Select value={item.members} disabled>
+              <Select
+                value={item.members}
+                onChange={(e) =>
+                  handleFieldChange(index, e.target.value, "members")
+                }
+              >
                 {Array.from({ length: 10 }, (_, i) => (
                   <option key={i} value={i + 1}>
                     {i + 1}명
@@ -299,15 +251,6 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
                 <IoIosArrowDown size={24} />
               </Icon>
             </SelectWrapper>
-
-            <ActionButtons>
-              <IoIosRemoveCircle
-                size={30}
-                color="#FF6140"
-                onClick={() => removeField(index)}
-                style={{ cursor: "pointer" }}
-              />
-            </ActionButtons>
           </FieldRow>
         ))}
       </DetailLayout>
@@ -472,12 +415,6 @@ const FieldRow = styled.div`
   align-items: center;
   gap: 12px;
   width: 100%;
-`;
-
-const ActionButtons = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
 `;
 
 const ButtonLayout = styled.div`
