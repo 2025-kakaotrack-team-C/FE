@@ -13,6 +13,7 @@ import {
   FaChevronDown,
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+import { setCookie } from "../utils/Cookie";
 
 const SideBar = () => {
   const [isTeamBuildingOpen, setIsTeamBuildingOpen] = useState(false);
@@ -51,6 +52,12 @@ const SideBar = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleLogout = () => {
+    setCookie("token", "", -1);
+    alert("로그아웃 되었습니다.");
+    window.location.href = "/login";
+  };
 
   return (
     <SidebarContainer isCollapsed={isCollapsed}>
@@ -187,7 +194,7 @@ const SideBar = () => {
             </MenuItem>
             <LogoutButton
               type="button"
-              onClick={() => setSelectedMenuItem("로그아웃")}
+              onClick={handleLogout}
               isSelected={selectedMenuItem === "로그아웃"}
             >
               <FaSignOutAlt /> 로그아웃
