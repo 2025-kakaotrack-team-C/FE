@@ -14,11 +14,17 @@ import {
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { setCookie } from "../utils/Cookie";
+import axios from "axios";
+import { getCookie } from "../utils/Cookie";
 
 const SideBar = () => {
   const [isTeamBuildingOpen, setIsTeamBuildingOpen] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [userData, setUserData] = useState({
+    nickname: "",
+    major: "",
+  });
 
   const teamBuildingItems = [
     { name: "ai", icon: <FaRobot />, path: "/ai" },
@@ -27,6 +33,32 @@ const SideBar = () => {
     { name: "앱 개발", icon: <FaMobileAlt />, path: "/app" },
     { name: "게임", icon: <FaGamepad />, path: "/game" },
   ];
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = getCookie("token");
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/mypage`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response);
+        const { nickname, major } = response.data;
+        setUserData({
+          nickname,
+          major,
+        });
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleTeamBuildingClick = () => {
     setIsTeamBuildingOpen((prev) => !prev);
@@ -76,7 +108,6 @@ const SideBar = () => {
       </Header>
 
       {isCollapsed ? (
-        // 축소된 상태: 아이콘과 팀빌딩 분류 표시
         <Menu>
           {/* 팀빌딩 아이콘 및 토글 */}
           <MenuItem
@@ -135,8 +166,8 @@ const SideBar = () => {
         <>
           <SidebarProfile>
             <SideBarPicture />
-            <SideBarName>이름</SideBarName>
-            <SideMajor>전공</SideMajor>
+            <SideBarName>{userData.nicknam || "이름 없음"}</SideBarName>
+            <SideMajor>{userData.major}</SideMajor>
             <SideBarProgress>프로그래스바</SideBarProgress>
           </SidebarProfile>
           <Menu>
