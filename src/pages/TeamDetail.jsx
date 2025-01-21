@@ -3,35 +3,49 @@ import styled from "styled-components";
 import { MdMoreVert } from "react-icons/md";
 import axios from "axios";
 import EditTeamForm from "../components/EditTeamForm";
-import { useParams } from "react-router-dom";
+import ApplyForm from "../pages/ApplyForm"; // ApplyForm 컴포넌트 import
+import { useNavigate, useParams } from "react-router-dom";
 import { getCookie } from "../utils/Cookie";
 
 const TeamDetail = () => {
-  const { id } = useParams(); // URL 파라미터에서 id를 가져옴
+  const navigate = useNavigate();
+  const { id } = useParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [teamData, setTeamData] = useState(null); // 초기값 null
-  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
-
-  // 현재 로그인된 사용자의 id를 저장할 상태
+  const [teamData, setTeamData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
 
-  // 부서 데이터를 미리 정의 (부서 번호 -> 부서 이름 매핑)
+  // 모달 열림/닫힘 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // "지원자 현황" 버튼 클릭 시 이동
+  const handleOpenApplyStatus = () => {
+    navigate("/applystatus");
+  };
+
+  // "지원하기" 모달 열기/닫기
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // API에서 사용하는 부서(department) 매핑
   const departmentsData = {
     1: "ai",
     2: "frontend",
     3: "backend",
     4: "app",
     5: "game",
-    // 추가 부서 정보
   };
 
-  // (1) 현재 로그인된 사용자 정보 가져오기
+  // 현재 사용자 정보 불러오기
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         const token = getCookie("token");
-        // 실제 API 주소로 교체
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/api/mypage`,
           {
@@ -40,7 +54,6 @@ const TeamDetail = () => {
             },
           }
         );
-        // 예시로 response.data.id가 사용자 id라고 가정
         setCurrentUserId(response.data.id);
       } catch (error) {
         console.error("현재 사용자 정보를 가져오는 데 실패했습니다:", error);
@@ -50,6 +63,7 @@ const TeamDetail = () => {
     fetchCurrentUser();
   }, []);
 
+  // 특정 프로젝트(팀) 데이터 불러오기
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
@@ -58,7 +72,6 @@ const TeamDetail = () => {
         );
         const data = response.data;
 
-        // 난이도 매핑
         const difficultyMapping = {
           1: "쉬움",
           2: "중간",
@@ -68,14 +81,13 @@ const TeamDetail = () => {
         const formattedData = {
           id: data.id,
           date: data.createdAt.split("T")[0],
-          // 난이도에 "난이도: "라는 문자열을 붙이신 것 같아서 그대로 유지
           difficulty: `난이도: ${
             difficultyMapping[data.difficult] || "알 수 없음"
           }`,
           title: data.title,
           tag: "#프로젝트",
           author: data.user.username,
-          authorId: data.user.id, // 추가로 저장
+          authorId: data.user.id,
           projectDescription: data.description,
           fieldAndMembers: data.fields
             .map(
@@ -86,14 +98,14 @@ const TeamDetail = () => {
             )
             .join(", "),
           deadline: data.deadline,
-          fields: data.fields, // 원래 형태로 추가
+          fields: data.fields,
         };
 
         setTeamData(formattedData);
       } catch (error) {
         console.error("데이터 가져오기 실패:", error);
       } finally {
-        setIsLoading(false); // 로딩 종료
+        setIsLoading(false);
       }
     };
 
@@ -102,28 +114,31 @@ const TeamDetail = () => {
     }
   }, [id]);
 
+  // 더보기 메뉴 열기/닫기
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
 
+  // 게시물 수정
   const handleEdit = () => {
     setIsEditMode(true);
     setIsMenuOpen(false);
   };
 
+  // 난이도 색상 매핑
+  const difficultyColorMapping = {
+    쉬움: "#27ae60",
+    중간: "#f1c40f",
+    어려움: "#e74c3c",
+  };
+
   if (isLoading) {
-    return <div>로딩 중...</div>; // 로딩 메시지
+    return <div>로딩 중...</div>;
   }
 
   if (!teamData) {
-    return <div>데이터를 불러오지 못했습니다.</div>; // 오류 처리
+    return <div>데이터를 불러오지 못했습니다.</div>;
   }
-
-  const difficultyColorMapping = {
-    쉬움: "#27ae60", // 초록
-    중간: "#f1c40f", // 노랑
-    어려움: "#e74c3c", // 빨강
-  };
 
   return (
     <Container>
@@ -144,7 +159,6 @@ const TeamDetail = () => {
               <Difficulty
                 color={
                   difficultyColorMapping[
-                    // teamData.difficulty 예시: "난이도: 쉬움" -> 뒤에 "쉬움" 추출
                     teamData.difficulty.replace("난이도: ", "")
                   ] || "#bdc3c7"
                 }
@@ -153,15 +167,14 @@ const TeamDetail = () => {
               </Difficulty>
               <Title>{teamData.title}</Title>
             </Header>
-
             <div>
               <Ttag>{teamData.tag}</Ttag>
             </div>
           </Rectangle>
+
           <div>
             <AuthorRow>
               <div>작성자 : {teamData.author}</div>
-              {/* 작성자(로그인 사용자)일 경우에만 3점 아이콘 렌더링 */}
               {currentUserId === teamData.authorId && (
                 <>
                   <IconWrapper onClick={toggleMenu}>
@@ -178,6 +191,7 @@ const TeamDetail = () => {
             </AuthorRow>
             <Border />
           </div>
+
           <DetailLayout>
             <DetailTitle>프로젝트 내용 설명</DetailTitle>
             <Detail>{teamData.projectDescription}</Detail>
@@ -191,23 +205,35 @@ const TeamDetail = () => {
             <Detail>{teamData.deadline}</Detail>
           </DetailLayout>
 
-          {/* (2) 작성자 id와 현재 로그인된 사용자 id 비교 → 버튼 분기 */}
           {currentUserId === teamData.authorId ? (
-            // 같으면 "지원자 현황" 버튼
-            <StButton>지원자 현황</StButton>
+            <StButton onClick={handleOpenApplyStatus}>지원자 현황</StButton>
           ) : (
-            // 다르면 "지원하기" 버튼
-            <StButton>지원하기</StButton>
+            // "지원하기" 버튼 클릭 -> 모달 열림
+            <StButton onClick={openModal}>지원하기</StButton>
           )}
         </>
       )}
+
+      {/*
+        ApplyForm에 
+          isOpen={isModalOpen}
+          closeModal={closeModal}
+          projectId={id}   <-- 추가!!
+        을 props로 넘겨 모달 열림/닫힘을 제어하면서
+        어느 프로젝트에 지원하는지 식별할 수 있도록 합니다.
+      */}
+      <ApplyForm
+        isOpen={isModalOpen}
+        closeModal={closeModal}
+        projectId={id} // 추가
+      />
     </Container>
   );
 };
 
 export default TeamDetail;
 
-// 스타일 컴포넌트는 기존 코드 그대로 사용
+// --- 스타일 컴포넌트 ---
 
 const Container = styled.div`
   display: flex;
@@ -359,7 +385,7 @@ const Difficulty = styled.div`
   padding: 8px 16px;
   border-radius: 24px;
   color: #ffffff;
-  background-color: ${(props) => props.color || "#bdc3c7"}; // 기본 회색
+  background-color: ${(props) => props.color || "#bdc3c7"};
   text-align: center;
   display: inline-block;
 `;

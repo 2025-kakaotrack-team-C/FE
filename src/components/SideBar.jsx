@@ -16,6 +16,7 @@ import { NavLink } from "react-router-dom";
 import { setCookie } from "../utils/Cookie";
 import axios from "axios";
 import { getCookie } from "../utils/Cookie";
+import Notifications from "../pages/Notifications";
 
 const SideBar = () => {
   const [isTeamBuildingOpen, setIsTeamBuildingOpen] = useState(false);
@@ -25,6 +26,16 @@ const SideBar = () => {
     nickname: "",
     major: "",
   });
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
 
   const teamBuildingItems = [
     { name: "ai", icon: <FaRobot />, path: "/ai" },
@@ -217,12 +228,13 @@ const SideBar = () => {
           <FixedBottom>
             <MenuItem
               as={NavLink}
-              to="/notifications"
+              to="#"
               isSelected={selectedMenuItem === "알림"}
-              onClick={() => setSelectedMenuItem("알림")}
+              onClick={openModal}
             >
               <FaBell /> 알림
             </MenuItem>
+
             <LogoutButton
               type="button"
               onClick={handleLogout}
@@ -231,6 +243,7 @@ const SideBar = () => {
               <FaSignOutAlt /> 로그아웃
             </LogoutButton>
           </FixedBottom>
+          <Notifications modalIsOpen={modalIsOpen} closeModal={closeModal} />
         </>
       )}
     </SidebarContainer>
