@@ -11,6 +11,7 @@ import TeamDetail from "../pages/TeamDetail";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import Main from "../pages/Main";
+import Evaluation from "../pages/Evaluation";
 // import MainPage from "../pages/Team";
 //test
 
@@ -23,12 +24,13 @@ function Router() {
           <Route path="/:category" element={<Team />} />
           <Route path="/project/:id" element={<TeamDetail />} />
           <Route path="/create" element={<CreateTeam />} />
+          <Route path="/evaluation" element={<Evaluation />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notifications" element={<Notifications />} />
         </Route>
-           <Route path="/main" element={<Main />} />
-           <Route path="/login" element={<Login />} />
-           <Route path="/signup" element={<Signup />} />
+        <Route path="/main" element={<Main />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   );
