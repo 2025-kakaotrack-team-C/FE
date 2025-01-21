@@ -36,6 +36,7 @@ function Evaluation() {
           ))}
         </StarContainer>
       </EvaluationSection>
+      <StButton>제출하기</StButton>
     </Container>
   );
 }
@@ -50,6 +51,7 @@ const Container = styled.div`
   padding: 24px;
   margin: 0 auto;
   max-width: 1440px;
+  position: relative;
 
   @media (max-width: 768px) {
     padding: 16px;
@@ -172,5 +174,24 @@ const Star = styled.div`
 
   &:hover {
     transform: scale(1.2);
+  }
+`;
+
+const StButton = styled.button`
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #dcdaf5;
+  color: #21005d;
+  font-size: 20px;
+  border-radius: 24px;
+  padding: 16px 24px;
+  cursor: pointer;
+
+  transition: background-color 0.3s, color 0.3s;
+  &:hover {
+    background-color: #21005d;
+    color: #dcdaf5;
   }
 `;
