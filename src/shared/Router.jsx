@@ -12,6 +12,8 @@ import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import Main from "../pages/Main";
 import Evaluation from "../pages/Evaluation";
+import ApplyForm from "../pages/ApplyForm";
+import ApplyStatus from "../pages/ApplyStatus";
 // import MainPage from "../pages/Team";
 //test
 
@@ -27,6 +29,8 @@ function Router() {
           <Route path="/evaluation" element={<Evaluation />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/applystatus" element={<ApplyStatus />} />
+          <Route path="/applyform" element={<ApplyForm />} />
         </Route>
         <Route path="/main" element={<Main />} />
         <Route path="/login" element={<Login />} />
