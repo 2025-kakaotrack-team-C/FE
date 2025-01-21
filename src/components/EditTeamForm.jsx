@@ -111,7 +111,7 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
       alert("데이터가 성공적으로 수정되었습니다!");
     } catch (error) {
       console.error("수정 중 에러 발생:", error);
-      alert("데이터 수정 중 에러가 발생했습니다.");
+      navigate("/");
     }
   };
 
