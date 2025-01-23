@@ -2,30 +2,99 @@ import React, { useState, useRef, useEffect } from "react";
 // import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { MdMoreVert } from "react-icons/md";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { getCookie } from "../utils/Cookie";
 
-const TeamDetail = () => {
-  //   const { type, id } = useParams();
+const TeamFormation = () => {
+  const { id } = useParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate(); // useNavigate 훅 사용
+  const [project, setProject] = useState("");
+  const [projectMembers, setProjectMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
 
+  const handleClose = async () => {
+    try {
+      const token = getCookie("token");
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/projects/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      navigate(`/project/${id}/evaluation`);
+    } catch (err) {
+      console.error("Error during handleClose:", err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = getCookie("token");
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/projects/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = response.data;
+        setProject(data.project);
+        setProjectMembers(data.projectMembers);
+        console.log("Project data fetched:", data);
+      } catch (err) {
+        if (err.response) {
+          setError(`Error: ${err.response.status} ${err.response.statusText}`);
+        } else if (err.request) {
+          // Request was made but no response received
+          setError("Error: No response received from server.");
+        } else {
+          // Something else happened
+          setError(err.message || "Failed to fetch project data.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const difficultyMapping = {
+    1: "쉬움",
+    2: "중간",
+    3: "어려움",
+  };
+
+  const difficultyColorMapping = {
+    쉬움: "#27ae60",
+    중간: "#f1c40f",
+    어려움: "#e74c3c",
+  };
+
+  // Department Mapping
+  const departmentMapping = {
+    1: "ai",
+    2: "프론트엔드",
+    3: "백엔드",
+    4: "앱",
+    5: "게임",
+    // Add more mappings as needed
+  };
+
   // 댓글 기능 상태 및 로직
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      author: "작성자 1",
-      date: "2024.05.26 16:20",
-      text: "ㅋㅋㅋㅋㅋㅋ",
-    },
-    {
-      id: 2,
-      author: "작성자 2",
-      date: "2024.05.26 00:20",
-      text: "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ",
-    },
-  ]);
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const bottomRef = useRef(null);
 
@@ -50,24 +119,44 @@ const TeamDetail = () => {
   return (
     <Container>
       <Rectangle>
-        <div>날짜</div>
+        <Title>팀 완성</Title>
         <Header>
-          <div>난이도</div>
-          <Title>제목</Title>
+          <Difficulty
+            color={
+              difficultyColorMapping[
+                difficultyMapping[project.difficult] || "중간"
+              ] || "#bdc3c7"
+            }
+          >
+            난이도 : {difficultyMapping[project.difficult] || "중간"}
+          </Difficulty>
+          <Title>{project.title}</Title>
         </Header>
         <div>
-          <Ttag># 태그</Ttag>
+          <Ttag># 프로젝트 진행중</Ttag>
         </div>
       </Rectangle>
       <div>
         <AuthorRow>
-          <div>작성자</div>
+          <span>
+            팀장: {project.userNickname}(
+            {departmentMapping[project.departments] || "기타"}) - 팀원:{" "}
+            {projectMembers.length > 0
+              ? projectMembers.map((member, index) => (
+                  <span key={member.id}>
+                    {member.nickname} (
+                    {departmentMapping[member.department] || "기타"})
+                    {index < projectMembers.length - 1 && ", "}
+                  </span>
+                ))
+              : "없음"}
+          </span>
           <IconWrapper onClick={toggleMenu}>
             <MdMoreVert size={24} color="#1c1c1d" />
           </IconWrapper>
           {isMenuOpen && (
             <Menu>
-              <MenuItem>마감</MenuItem>
+              <MenuItem onClick={handleClose}>마감</MenuItem>
             </Menu>
           )}
         </AuthorRow>
@@ -75,7 +164,7 @@ const TeamDetail = () => {
       </div>
       <DetailLayout>
         <DetailTitle>프로젝트 내용 설명</DetailTitle>
-        <Detail>내용</Detail>
+        <Detail>{project.description}</Detail>
       </DetailLayout>
       {/* 댓글 섹션 */}
       <DetailTitle>댓글 창</DetailTitle>
@@ -103,7 +192,7 @@ const TeamDetail = () => {
   );
 };
 
-export default TeamDetail;
+export default TeamFormation;
 
 const Container = styled.div`
   display: flex;
@@ -305,4 +394,14 @@ const SubmitButton = styled.button`
     background-color: #21005d;
     color: #ffffff;
   }
+`;
+
+const Difficulty = styled.div`
+  font-size: 18px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  color: #ffffff;
+  background-color: ${(props) => props.color || "#bdc3c7"};
+  text-align: center;
+  display: inline-block;
 `;

@@ -35,6 +35,7 @@ const Team = () => {
         const sortedProjects = response.data.sort((a, b) => b.id - a.id);
 
         setProjects(sortedProjects);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
@@ -99,7 +100,7 @@ const Team = () => {
             </FieldLayout>
             <TeamTitle>{project.title}</TeamTitle>
             <TeamInfo>
-              <div>참여 인원: 0/{project.totalRange}</div>
+              <div>참여 인원: {project.totalRange}</div>
               <div>마감일: {project.deadline}</div>
             </TeamInfo>
           </TeamBorder>
