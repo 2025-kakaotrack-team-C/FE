@@ -34,8 +34,14 @@ const Team = () => {
         // (id가 클수록 최근 생성된 데이터라고 가정)
         const sortedProjects = response.data.sort((a, b) => b.id - a.id);
 
-        setProjects(sortedProjects);
-        console.log(response.data);
+        // 상태가 1인 프로젝트만 필터링
+        const activeProjects = sortedProjects.filter(
+          (project) => project.status === 1
+        );
+
+        setProjects(activeProjects);
+
+        // setProjects(sortedProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
