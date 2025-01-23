@@ -17,6 +17,7 @@ import { setCookie } from "../utils/Cookie";
 import axios from "axios";
 import { getCookie } from "../utils/Cookie";
 import Notifications from "../pages/Notifications";
+import SideBarPicture from "../components/SideBarPicture";
 
 const SideBar = () => {
   const [isTeamBuildingOpen, setIsTeamBuildingOpen] = useState(false);
@@ -26,6 +27,7 @@ const SideBar = () => {
     nickname: "",
     major: "",
   });
+  const [rating, setRating] = useState(null);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -65,6 +67,24 @@ const SideBar = () => {
         });
       } catch (error) {
         console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    const fetchUserRating = async (userId) => {
+      try {
+        const token = getCookie("token");
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/reviews?userId=${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const { rating } = response.data; // Assuming the response has a 'rating' field
+        setRating(rating);
+      } catch (error) {
+        console.error("Failed to fetch rating:", error);
       }
     };
 
@@ -176,7 +196,7 @@ const SideBar = () => {
         // 확장된 상태: 전체 메뉴 표시
         <>
           <SidebarProfile>
-            <SideBarPicture />
+            <SideBarPicture rating={rating} />
             <SideBarName>{userData.nickname || "이름 없음"}</SideBarName>
             <SideMajor>{userData.major || "비전공"}</SideMajor>
             <SideBarProgress>프로그래스바</SideBarProgress>
@@ -303,13 +323,13 @@ const SidebarProfile = styled.div`
   margin-bottom: 24px;
 `;
 
-const SideBarPicture = styled.div`
-  width: 128px;
-  height: 128px;
-  background-color: #4caf50;
-  border-radius: 50%;
-  margin-bottom: 16px;
-`;
+// const SideBarPicture = styled.div`
+//   width: 128px;
+//   height: 128px;
+//   background-color: #4caf50;
+//   border-radius: 50%;
+//   margin-bottom: 16px;
+// `;
 
 const SideBarName = styled.div`
   font-size: 18px;

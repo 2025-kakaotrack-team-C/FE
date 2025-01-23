@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
@@ -156,11 +156,10 @@ const CloseButton = styled.button`
 `;
 
 const ApplyStatus = () => {
-  // 신청 목록을 담을 state
   const [applications, setApplications] = useState([]);
   const navigate = useNavigate();
+  const { id } = useParams(); // URL에서 projectId 추출
 
-  // 역 매핑 (숫자 → 문자열) 객체
   const reversedDepartmentMapping = {
     1: "ai",
     2: "frontend",
@@ -169,33 +168,34 @@ const ApplyStatus = () => {
     5: "game",
   };
 
-  // 지원 목록 데이터 불러오기
   useEffect(() => {
     const fetchApplications = async () => {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/api/applications`
         );
-        setApplications(response.data);
+        // projectId와 일치하는 항목만 필터링
+        const filteredApps = response.data.filter(
+          (app) => String(app.project.projectId) === String(id)
+        );
+
+        setApplications(filteredApps);
       } catch (error) {
         console.error("데이터 불러오기 실패:", error);
       }
     };
     fetchApplications();
-  }, []);
+  }, [id]);
 
-  // 상태에 따른 분류
   const pendingApps = applications.filter((app) => app.status === 1);
   const acceptedApps = applications.filter((app) => app.status === 2);
   const rejectedApps = applications.filter((app) => app.status === 3);
 
-  // 수락 버튼 핸들러 (status -> 2)
   const handleAccept = async (applicationId) => {
     try {
       await axios.put(
         `${process.env.REACT_APP_API_URL}/api/applications/${applicationId}/accept`
       );
-      // 로컬 state에서 해당 application의 status만 2로 업데이트
       setApplications((prev) =>
         prev.map((app) =>
           app.applicationId === applicationId ? { ...app, status: 2 } : app
@@ -206,13 +206,11 @@ const ApplyStatus = () => {
     }
   };
 
-  // 거절 버튼 핸들러 (status -> 3)
   const handleReject = async (applicationId) => {
     try {
       await axios.put(
         `${process.env.REACT_APP_API_URL}/api/applications/${applicationId}/reject`
       );
-      // 로컬 state에서 해당 application의 status만 3으로 업데이트
       setApplications((prev) =>
         prev.map((app) =>
           app.applicationId === applicationId ? { ...app, status: 3 } : app
@@ -223,12 +221,10 @@ const ApplyStatus = () => {
     }
   };
 
-  // 닫기 버튼 핸들러
   const handleClose = () => {
     navigate(-1);
   };
 
-  // 상태 라벨 (옵션: 상태 라벨을 표시해주고 싶다면 사용)
   const getStatusLabel = (status) => {
     switch (status) {
       case 1:
@@ -284,15 +280,12 @@ const ApplyStatus = () => {
       <Title>지원 현황 ({applications.length}명)</Title>
       <Divider />
 
-      {/* 대기중 지원자 */}
       <Subtitle>대기중 ({pendingApps.length}명)</Subtitle>
       <BoxContainer>{renderApplicationBoxes(pendingApps)}</BoxContainer>
 
-      {/* 수락된 지원자 */}
       <Subtitle>수락됨 ({acceptedApps.length}명)</Subtitle>
       <BoxContainer>{renderApplicationBoxes(acceptedApps)}</BoxContainer>
 
-      {/* 거절된 지원자 */}
       <Subtitle>거절됨 ({rejectedApps.length}명)</Subtitle>
       <BoxContainer>{renderApplicationBoxes(rejectedApps)}</BoxContainer>
 

@@ -231,34 +231,9 @@ function MyPage() {
     );
   };
 
-  // ---------------------------
-  // 7) 게시물 예시 (UI 확인용)
-  // ---------------------------
-  const myPosts = [
-    { id: 1, fields: ["백엔드", "프론트"], title: "웹개발 하실?" },
-    { id: 2, fields: ["백엔드", "프론트"], title: "웹개발 하실?" },
-    { id: 3, fields: ["백엔드", "프론트"], title: "웹개발 하실?" },
-    { id: 4, fields: ["백엔드", "프론트"], title: "웹개발 하실?" },
-  ];
-  const appliedPosts = [
-    { id: 11, fields: ["백엔드"], title: "지원한 백엔드 공고" },
-    { id: 12, fields: ["프론트"], title: "지원한 프론트엔드 공고" },
-  ];
-  const myProjects = [
-    { id: 21, fields: ["백엔드"], title: "이전에 완료한 백엔드 프로젝트" },
-    {
-      id: 22,
-      fields: ["프론트", "백엔드"],
-      title: "이전에 완료한 풀스택 프로젝트",
-    },
-  ];
-  const ongoingProjects = [
-    { id: 31, fields: ["프론트"], title: "지금 진행 중인 프론트 프로젝트" },
-  ];
-
   // 상세 페이지 이동 함수
   const goToPostDetail = (postId) => {
-    navigate(`/post/${postId}`);
+    navigate(`/project/${postId}`);
   };
 
   return (
@@ -384,13 +359,7 @@ function MyPage() {
       </InfoCard>
 
       {/* ----- 내가 작성한 공고, 지원/진행 공고 ----- */}
-      <MyPosts
-        myPosts={myPosts}
-        appliedPosts={appliedPosts}
-        myProjects={myProjects}
-        ongoingProjects={ongoingProjects}
-        goToPostDetail={goToPostDetail}
-      />
+      <MyPosts goToPostDetail={goToPostDetail} />
     </Container>
   );
 }

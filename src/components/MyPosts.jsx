@@ -1,31 +1,63 @@
 // MyPostsSection.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FaChevronLeft, FaChevronRight, FaFilter } from "react-icons/fa";
+import { getCookie } from "../utils/Cookie";
+import axios from "axios";
+function MyPostsSection({ goToPostDetail }) {
+  const [data, setData] = useState({
+    writtenProjects: [],
+    appliedProjects: [],
+    completedProjects: [],
+    ongoingProjects: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-function MyPostsSection({
-  myPosts,
-  appliedPosts,
-  myProjects,
-  ongoingProjects,
-  goToPostDetail,
-}) {
+  // ===============================
+  // 데이터 가져오기
+  // ===============================
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = getCookie("token");
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/mypage`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setData({
+          writtenProjects: response.data.writtenProjects || [],
+          appliedProjects: response.data.appliedProjects || [],
+          completedProjects: response.data.completedProjects || [],
+          ongoingProjects: response.data.ongoingProjects || [],
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+        setError(err);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   // ===============================
   // 슬라이더 관련 상태 & 로직
   // ===============================
   const [currentSlide, setCurrentSlide] = useState(0);
-  // 화면에 한 번에 보일 카드(박스) 개수
   const VISIBLE_CARDS = 3;
 
-  // 다음 슬라이드
   const handleNext = () => {
-    // 슬라이드 할 수 있는 마지막 인덱스 = (총개수 - VISIBLE_CARDS)
     if (currentSlide < getFilteredData().length - VISIBLE_CARDS) {
       setCurrentSlide((prev) => prev + 1);
     }
   };
 
-  // 이전 슬라이드
   const handlePrev = () => {
     if (currentSlide > 0) {
       setCurrentSlide((prev) => prev - 1);
@@ -35,97 +67,95 @@ function MyPostsSection({
   // ===============================
   // 필터 상태 & 함수
   // ===============================
-  const [filter, setFilter] = useState("myPosts"); // 기본값: 내가 쓴 공고
-  const [showFilterMenu, setShowFilterMenu] = useState(false); // 메뉴 표시 여부
+  const [filter, setFilter] = useState("writtenProjects");
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
 
-  // 필터 메뉴 열기/닫기
   const handleFilterMenuToggle = () => {
     setShowFilterMenu((prev) => !prev);
   };
 
-  // 필터 항목 선택 시
   const handleFilterSelect = (selectedFilter) => {
     setFilter(selectedFilter);
     setShowFilterMenu(false);
-    setCurrentSlide(0); // 필터가 바뀔 때마다 슬라이드를 처음으로 초기화
+    setCurrentSlide(0);
   };
 
-  // 현재 선택된 필터 상태에 따라 데이터를 리턴
   const getFilteredData = () => {
-    if (filter === "appliedPosts") return appliedPosts;
-    if (filter === "myProjects") return myProjects;
-    if (filter === "ongoingProjects") return ongoingProjects;
-    return myPosts; // 기본값: 내가 쓴 공고
+    if (filter === "appliedProjects") return data.appliedProjects;
+    if (filter === "completedProjects") return data.completedProjects;
+    if (filter === "ongoingProjects") return data.ongoingProjects;
+    return data.writtenProjects;
   };
 
-  // 현재 필터 상태에 따라 헤더 문구 변경 (옵션)
   const getHeaderTitle = () => {
     switch (filter) {
-      case "appliedPosts":
+      case "appliedProjects":
         return "내가 지원한 공고";
-      case "myProjects":
-        return "내가 한 프로젝트";
+      case "completedProjects":
+        return "완료된 프로젝트";
       case "ongoingProjects":
-        return "내가 진행 중인 프로젝트";
-      case "myPosts":
+        return "진행 중인 프로젝트";
+      case "writtenProjects":
       default:
         return "내가 쓴 공고";
     }
   };
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data: {error.message}</div>;
+
   return (
     <div>
-      {/* 필터 헤더 영역 */}
+      {/* 필터 헤더 */}
       <HeaderWrapper>
         <Header>{getHeaderTitle()}</Header>
         <FilterIcon onClick={handleFilterMenuToggle}>
           <FaFilter />
         </FilterIcon>
-
-        {/* 필터 메뉴 (드롭다운) */}
         {showFilterMenu && (
           <FilterMenu>
-            <FilterMenuItem onClick={() => handleFilterSelect("myPosts")}>
+            <FilterMenuItem
+              onClick={() => handleFilterSelect("writtenProjects")}
+            >
               내가 쓴 공고
             </FilterMenuItem>
-            <FilterMenuItem onClick={() => handleFilterSelect("appliedPosts")}>
+            <FilterMenuItem
+              onClick={() => handleFilterSelect("appliedProjects")}
+            >
               내가 지원한 공고
             </FilterMenuItem>
-            <FilterMenuItem onClick={() => handleFilterSelect("myProjects")}>
-              내가 한 프로젝트
+            <FilterMenuItem
+              onClick={() => handleFilterSelect("completedProjects")}
+            >
+              완료된 프로젝트
             </FilterMenuItem>
             <FilterMenuItem
               onClick={() => handleFilterSelect("ongoingProjects")}
             >
-              내가 진행 중인 프로젝트
+              진행 중인 프로젝트
             </FilterMenuItem>
           </FilterMenu>
         )}
       </HeaderWrapper>
 
-      {/* 슬라이더 영역 */}
+      {/* 슬라이더 */}
       <InfoCard>
         <SliderWrapper>
           <SliderButton onClick={handlePrev}>
             <FaChevronLeft />
           </SliderButton>
-
           <SliderTrack currentSlide={currentSlide}>
-            {/* 필터 상태에 따라 반환된 데이터로 카드 렌더링 */}
             {getFilteredData().map((post) => (
-              <PostCard key={post.id} onClick={() => goToPostDetail(post.id)}>
-                <FieldContainer>
-                  {post.fields.map((field) => (
-                    <FieldChip key={field} field={field}>
-                      {field}
-                    </FieldChip>
-                  ))}
-                </FieldContainer>
+              <PostCard
+                key={post.projectId}
+                onClick={() => goToPostDetail(post.projectId)}
+              >
+                <p>마감일: {post.deadline}</p>
+                <p>난이도: {post.difficult}</p>
                 <PostTitle>{post.title}</PostTitle>
               </PostCard>
             ))}
           </SliderTrack>
-
           <SliderButton onClick={handleNext}>
             <FaChevronRight />
           </SliderButton>
@@ -136,6 +166,8 @@ function MyPostsSection({
 }
 
 export default MyPostsSection;
+
+/* 기존 styled-components 그대로 유지 */
 
 /* =============================== */
 /* styled-components 부분         */
@@ -186,7 +218,6 @@ const FilterIcon = styled.div`
 const FilterMenu = styled.div`
   position: absolute;
   top: 50%;
-  /* left: 0; */
   right: 0;
   margin-top: 8px;
   background-color: #fff;
@@ -214,6 +245,7 @@ const InfoCard = styled.div`
   padding: 24px;
   display: flex;
   flex-direction: column;
+  height: 300px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
 

@@ -18,10 +18,11 @@ const TeamDetail = () => {
 
   // 모달 열림/닫힘 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [projectState, setProjectState] = useState(null);
 
   // "지원자 현황" 버튼 클릭 시 이동
   const handleOpenApplyStatus = () => {
-    navigate("/applystatus");
+    navigate(`/applystatus/${id}`);
   };
 
   // "지원하기" 모달 열기/닫기
@@ -71,6 +72,9 @@ const TeamDetail = () => {
           `${process.env.REACT_APP_API_URL}/api/projects/${id}`
         );
         const data = response.data;
+        console.log(data);
+        // 프로젝트 state 값 설정
+        setProjectState(data.status); // API 응답에 state가 있다고 가정
 
         const difficultyMapping = {
           1: "쉬움",
@@ -132,6 +136,14 @@ const TeamDetail = () => {
     어려움: "#e74c3c",
   };
 
+  // 진행 중
+  if (projectState === 2) {
+    navigate(`/projects/${id}/formation`);
+  }
+  if (projectState === 3) {
+    navigate(`/project/${id}/evaluation`);
+  }
+
   if (isLoading) {
     return <div>로딩 중...</div>;
   }
@@ -168,7 +180,7 @@ const TeamDetail = () => {
               <Title>{teamData.title}</Title>
             </Header>
             <div>
-              <Ttag>{teamData.tag}</Ttag>
+              <Ttag># 프로젝트 모집중</Ttag>
             </div>
           </Rectangle>
 

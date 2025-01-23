@@ -14,6 +14,7 @@ import Main from "../pages/Main";
 import Evaluation from "../pages/Evaluation";
 import ApplyForm from "../pages/ApplyForm";
 import ApplyStatus from "../pages/ApplyStatus";
+import TeamFormation from "../pages/TeamFormation";
 // import MainPage from "../pages/Team";
 //test
 
@@ -25,11 +26,12 @@ function Router() {
           <Route path="/" element={<Team />} />
           <Route path="/:category" element={<Team />} />
           <Route path="/project/:id" element={<TeamDetail />} />
+          <Route path="/projects/:id/formation" element={<TeamFormation />} />
+          <Route path="/project/:id/evaluation" element={<Evaluation />} />
           <Route path="/create" element={<CreateTeam />} />
-          <Route path="/evaluation" element={<Evaluation />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/applystatus" element={<ApplyStatus />} />
+          <Route path="/applystatus/:id" element={<ApplyStatus />} />
           <Route path="/applyform" element={<ApplyForm />} />
         </Route>
         <Route path="/main" element={<Main />} />
