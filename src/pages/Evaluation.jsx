@@ -60,7 +60,7 @@ function Evaluation() {
         reviewerId: userId,
         revieweeId: member.userId,
         rating: ratings[member.userId],
-        // reviewerNickname: userNickname,
+        reviewerNickname: userNickname,
       }));
 
     try {
@@ -76,7 +76,7 @@ function Evaluation() {
         }
       );
       console.log("리뷰가 성공적으로 제출되었습니다.");
-      // 평가 초기화
+
       // setRatings({});
       // 사용자에게 성공 메시지 제공 (옵션)
       alert("리뷰가 성공적으로 제출되었습니다.");
@@ -123,21 +123,20 @@ function Evaluation() {
     fetchData();
   }, [id]);
 
+  // 현재 사용자를 제외한 팀원 목록 필터링
+  const filteredMembers = memberData.filter(
+    (member) => member.userId !== userId
+  );
+
   return (
     <Container>
       <Title>
-        <Header>당신의 온도는?</Header>
+        <Header>팀원 평가하기</Header>
       </Title>
-      {/* 상태 확인을 위한 디버그용 출력 (필요 시 제거) */}
-      {/* <pre>{JSON.stringify(ratings, null, 2)}</pre> */}
-      {memberData.map((member) => (
+      {filteredMembers.map((member) => (
         <MemberContainer key={member.userId}>
           <ProfileSection>
-            <Picture>
-              {/* 실제 사진을 표시하려면 src 속성을 추가하세요 */}
-              {/* 예: <img src={member.profilePictureUrl} alt={`${member.nickname} 사진`} /> */}
-              사진
-            </Picture>
+            <Picture>사진</Picture>
             <ProfileDetails>
               <Name>{member.nickname}</Name>
               <Major>
@@ -179,7 +178,7 @@ const Container = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   padding: 24px;
   margin: 0 auto;
   max-width: 1440px;
@@ -252,7 +251,7 @@ const Name = styled.div`
 `;
 
 const Major = styled.div`
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   margin-bottom: 16px;
 
@@ -262,7 +261,7 @@ const Major = styled.div`
 `;
 
 const Language = styled.div`
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   margin-bottom: 16px;
 
