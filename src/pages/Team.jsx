@@ -106,7 +106,7 @@ const Team = () => {
             </FieldLayout>
             <TeamTitle>{project.title}</TeamTitle>
             <TeamInfo>
-              <div>참여 인원: {project.totalRange}</div>
+              <div>모집 인원: {project.totalRange}</div>
               <div>마감일: {project.deadline}</div>
             </TeamInfo>
           </TeamBorder>

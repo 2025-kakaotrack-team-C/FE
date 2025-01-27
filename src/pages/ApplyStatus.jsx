@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
+import SideBarPicture from "../components/SideBarPicture";
 
 const Container = styled.div`
   display: flex;
@@ -22,14 +23,14 @@ const Container = styled.div`
 
 const Title = styled.div`
   font-family: "yg-Jalnan";
-  font-size: 1.5vw;
+  font-size: 36px;
   margin-top: 2vh;
   margin-left: 2vw;
 `;
 
 const Subtitle = styled.div`
   font-family: "yg-Jalnan";
-  font-size: 1.2vw;
+  font-size: 24px;
   margin-top: 5vh;
   margin-left: 2vw;
 `;
@@ -180,6 +181,7 @@ const ApplyStatus = () => {
         );
 
         setApplications(filteredApps);
+        console.log("Filtered Applications:", filteredApps);
       } catch (error) {
         console.error("데이터 불러오기 실패:", error);
       }
@@ -239,40 +241,47 @@ const ApplyStatus = () => {
   };
 
   const renderApplicationBoxes = (apps) => {
-    return apps.map((app) => (
-      <Box key={app.applicationId} status={app.status}>
-        <UserPicture />
-        <Contents>
-          <TextBox>
-            <UserName>{app.member?.username || "이름 정보 없음"}</UserName>
-            <UseProfile>
-              전공(부서):{" "}
-              {reversedDepartmentMapping[app.department] || "부서 정보 없음"}
-              <br />
-              현재 상태: {getStatusLabel(app.status)}
-            </UseProfile>
-          </TextBox>
-          {app.status === 1 && (
-            <ButtonContainer>
-              <BoxButton
-                ButtonColor="#DCDAF5"
-                TextColor="#21005D"
-                onClick={() => handleAccept(app.applicationId)}
-              >
-                수락
-              </BoxButton>
-              <BoxButton
-                ButtonColor="#F2ECEE"
-                TextColor="#787579"
-                onClick={() => handleReject(app.applicationId)}
-              >
-                거절
-              </BoxButton>
-            </ButtonContainer>
-          )}
-        </Contents>
-      </Box>
-    ));
+    return apps.map((app) => {
+      // rating 값을 정수로 반올림
+      const roundedRating = Math.round(app.rating);
+
+      return (
+        <Box key={app.applicationId} status={app.status}>
+          <SideBarPicture rating={roundedRating} />
+          <Contents>
+            <TextBox>
+              <UserName>{app.member?.username || "이름 정보 없음"}</UserName>
+              <UseProfile>
+                전공(부서):{" "}
+                {reversedDepartmentMapping[app.department] || "부서 정보 없음"}
+                <br />
+                현재 상태: {getStatusLabel(app.status)}
+                <br />
+                {/* 평점: {roundedRating} */}
+              </UseProfile>
+            </TextBox>
+            {app.status === 1 && (
+              <ButtonContainer>
+                <BoxButton
+                  ButtonColor="#DCDAF5"
+                  TextColor="#21005D"
+                  onClick={() => handleAccept(app.applicationId)}
+                >
+                  수락
+                </BoxButton>
+                <BoxButton
+                  ButtonColor="#F2ECEE"
+                  TextColor="#787579"
+                  onClick={() => handleReject(app.applicationId)}
+                >
+                  거절
+                </BoxButton>
+              </ButtonContainer>
+            )}
+          </Contents>
+        </Box>
+      );
+    });
   };
 
   return (

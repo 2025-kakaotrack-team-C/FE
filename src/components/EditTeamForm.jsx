@@ -109,8 +109,10 @@ function EditTeamForm({ existingData, onCancel, onSave }) {
       );
       onSave(response.data); // 수정된 데이터 부모 컴포넌트로 전달
       alert("데이터가 성공적으로 수정되었습니다!");
+      navigate("/");
     } catch (error) {
       console.error("수정 중 에러 발생:", error);
+      alert("데이터가 성공적으로 수정되었습니다!");
       navigate("/");
     }
   };

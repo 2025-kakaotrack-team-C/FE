@@ -13,11 +13,11 @@ import {
   FaChevronDown,
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
-import { setCookie } from "../utils/Cookie";
+import { setCookie, getCookie } from "../utils/Cookie";
 import axios from "axios";
-import { getCookie } from "../utils/Cookie";
 import Notifications from "../pages/Notifications";
 import SideBarPicture from "../components/SideBarPicture";
+import ProgressBar from "../components/Progress"; // 추가
 
 const SideBar = () => {
   const [isTeamBuildingOpen, setIsTeamBuildingOpen] = useState(false);
@@ -60,13 +60,14 @@ const SideBar = () => {
           }
         );
         console.log(response);
-        const { nickname, major } = response.data;
+        const { nickname, major, id } = response.data; // 'id'가 유저 ID라 가정
         setUserData({
           nickname,
           major,
         });
+        fetchUserRating(id); // userId를 fetchUserRating에 전달
       } catch (error) {
-        console.error("Failed to fetch user data:", error);
+        console.error("사용자 데이터를 가져오는데 실패했습니다:", error);
       }
     };
 
@@ -81,10 +82,33 @@ const SideBar = () => {
             },
           }
         );
-        const { rating } = response.data; // Assuming the response has a 'rating' field
-        setRating(rating);
+
+        console.log("Rating Response:", response.data); // 응답 데이터 확인
+
+        // 배열이 비어있는 경우 기본값 0으로 설정
+        if (response.data.length === 0) {
+          setRating(0);
+          console.log("사용자에 대한 리뷰가 없습니다."); // 로그 추가
+          return;
+        }
+
+        // 모든 리뷰의 레이팅을 합산
+        const totalRating = response.data.reduce(
+          (sum, review) => sum + review.rating,
+          0
+        );
+        // 평균 계산
+        const averageRating = totalRating / response.data.length;
+        // 반올림
+        const roundedRating = Math.round(averageRating);
+
+        setRating(roundedRating);
+        console.log(
+          `평균 레이팅: ${averageRating}, 반올림된 레이팅: ${roundedRating}`
+        );
       } catch (error) {
-        console.error("Failed to fetch rating:", error);
+        console.error("레이팅을 가져오는데 실패했습니다:", error);
+        setRating(0); // 실패 시 기본값 설정
       }
     };
 
@@ -199,7 +223,7 @@ const SideBar = () => {
             <SideBarPicture rating={rating} />
             <SideBarName>{userData.nickname || "이름 없음"}</SideBarName>
             <SideMajor>{userData.major || "비전공"}</SideMajor>
-            <SideBarProgress>프로그래스바</SideBarProgress>
+            <ProgressBar rating={rating} />
           </SidebarProfile>
           <Menu>
             <MenuItemWithArrow
@@ -335,6 +359,7 @@ const SideBarName = styled.div`
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 4px;
+  margin-top: 16px;
   font-family: yg-jalnan;
 `;
 
@@ -344,11 +369,7 @@ const SideMajor = styled.div`
   font-family: yg-jalnan;
 `;
 
-const SideBarProgress = styled.div`
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-`;
+// ProgressBar 스타일링은 별도의 컴포넌트에서 처리됨
 
 const Menu = styled.ul`
   display: flex;

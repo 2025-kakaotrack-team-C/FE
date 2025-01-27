@@ -15,6 +15,7 @@ import Evaluation from "../pages/Evaluation";
 import ApplyForm from "../pages/ApplyForm";
 import ApplyStatus from "../pages/ApplyStatus";
 import TeamFormation from "../pages/TeamFormation";
+import CompletedProject from "../components/CompletedProject";
 // import MainPage from "../pages/Team";
 //test
 
@@ -33,6 +34,7 @@ function Router() {
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/applystatus/:id" element={<ApplyStatus />} />
           <Route path="/applyform" element={<ApplyForm />} />
+          <Route path="/completed-project/:id" element={<CompletedProject />} />
         </Route>
         <Route path="/main" element={<Main />} />
         <Route path="/login" element={<Login />} />

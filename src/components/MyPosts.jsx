@@ -1,9 +1,11 @@
 // MyPostsSection.jsx
+
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FaChevronLeft, FaChevronRight, FaFilter } from "react-icons/fa";
 import { getCookie } from "../utils/Cookie";
 import axios from "axios";
+
 function MyPostsSection({ goToPostDetail }) {
   const [data, setData] = useState({
     writtenProjects: [],
@@ -13,6 +15,21 @@ function MyPostsSection({ goToPostDetail }) {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // ===============================
+  // \*Added: department mapping
+  // ===============================
+  const departmentMap = {
+    1: "ai",
+    2: "프론트",
+    3: "백엔드",
+    4: "앱",
+    5: "게임",
+  };
+
+  function getDepartmentName(deptCode) {
+    return departmentMap[deptCode] || "기타";
+  }
 
   // ===============================
   // 데이터 가져오기
@@ -145,16 +162,24 @@ function MyPostsSection({ goToPostDetail }) {
             <FaChevronLeft />
           </SliderButton>
           <SliderTrack currentSlide={currentSlide}>
-            {getFilteredData().map((post) => (
-              <PostCard
-                key={post.projectId}
-                onClick={() => goToPostDetail(post.projectId)}
-              >
-                <p>마감일: {post.deadline}</p>
-                <p>난이도: {post.difficult}</p>
-                <PostTitle>{post.title}</PostTitle>
-              </PostCard>
-            ))}
+            {getFilteredData().map((post) => {
+              // \*Added: get the department name for each post
+              const deptName = getDepartmentName(post.department);
+
+              return (
+                <PostCard
+                  key={post.projectId}
+                  onClick={() => goToPostDetail(post.projectId)}
+                >
+                  <FieldContainer>
+                    <FieldChip field={deptName}>{deptName}</FieldChip>
+                  </FieldContainer>
+                  {/* <p>마감일: {post.deadline}</p>
+                  <p>난이도: {post.difficult}</p> */}
+                  <PostTitle>{post.title}</PostTitle>
+                </PostCard>
+              );
+            })}
           </SliderTrack>
           <SliderButton onClick={handleNext}>
             <FaChevronRight />
@@ -167,32 +192,21 @@ function MyPostsSection({ goToPostDetail }) {
 
 export default MyPostsSection;
 
-/* 기존 styled-components 그대로 유지 */
-
 /* =============================== */
 /* styled-components 부분         */
 /* =============================== */
-/* (1) 공통 스타일 믹스인 */
 
 const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
-
-  @media (max-width: 768px) {
-    align-items: center;
-  }
-
-  @media (max-width: 480px) {
-    align-items: center;
-  }
+  margin-bottom: 16px;
 `;
 
 const Header = styled.h2`
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 16px;
   font-family: "yg-jalnan", sans-serif;
 
   @media (max-width: 768px) {
@@ -214,10 +228,9 @@ const FilterIcon = styled.div`
   }
 `;
 
-/* 필터 메뉴 (드롭다운) */
 const FilterMenu = styled.div`
   position: absolute;
-  top: 50%;
+  top: 100%;
   right: 0;
   margin-top: 8px;
   background-color: #fff;
@@ -245,7 +258,7 @@ const InfoCard = styled.div`
   padding: 24px;
   display: flex;
   flex-direction: column;
-  height: 300px;
+  /* height: 300px; */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
 
@@ -258,9 +271,6 @@ const InfoCard = styled.div`
   }
 `;
 
-/* =============================== */
-/* (5) 내가 쓴 공고 (슬라이더)   */
-/* =============================== */
 const SliderWrapper = styled.div`
   position: relative;
   overflow: hidden;
@@ -290,12 +300,12 @@ const SliderButton = styled.button`
   top: 50%;
   transform: translateY(-50%);
   font-size: 24px;
-  /* background-color: rgba(255, 255, 255, 0.7); */
   border: none;
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
   z-index: 2;
+  background-color: rgba(255, 255, 255, 0.75);
 
   &:first-of-type {
     left: 16px;
@@ -322,6 +332,8 @@ const PostCard = styled.div`
 
   &:hover {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+    background-color: #dcdaf5;
   }
 
   @media (max-width: 768px) {
@@ -336,20 +348,10 @@ const PostCard = styled.div`
 `;
 
 const FieldContainer = styled.div`
-  justify-content: flex-end;
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
-
-  @media (max-width: 768px) {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  @media (max-width: 480px) {
-    gap: 4px;
-    justify-content: flex-start;
-  }
+  justify-content: flex-end; /* 모든 화면 크기에서 오른쪽 정렬 */
 `;
 
 const FieldChip = styled.div`
@@ -358,14 +360,7 @@ const FieldChip = styled.div`
   font-size: 14px;
   font-weight: 600;
 
-  /* 간단히 필드명에 따라 색상 다르게 예시 */
-  background-color: ${({ field }) =>
-    field === "백엔드"
-      ? "#39D372" // 녹색
-      : field === "프론트"
-      ? "#FFE28C" // 노란색
-      : "#ccc"};
-  color: #1c1c1d;
+  background-color: #39d372;
 `;
 
 const PostTitle = styled.div`

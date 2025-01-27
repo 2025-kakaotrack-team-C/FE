@@ -3,7 +3,8 @@ import styled from "styled-components";
 import { FaStar } from "react-icons/fa";
 import axios from "axios";
 import { getCookie } from "../utils/Cookie";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import SideBarPicture from "../components/SideBarPicture";
 
 function Evaluation() {
   const { id } = useParams();
@@ -11,7 +12,7 @@ function Evaluation() {
   const [userNickname, setUserNickname] = useState("");
   const [memberData, setMemberData] = useState([]); // 팀원 데이터 상태
   const [ratings, setRatings] = useState({}); // 각 팀원에 대한 평가 점수
-
+  const navigate = useNavigate();
   // 매핑 객체 정의
   const departmentMap = {
     1: "ai",
@@ -76,6 +77,7 @@ function Evaluation() {
         }
       );
       console.log("리뷰가 성공적으로 제출되었습니다.");
+      navigate(`/completed-project/${id}`);
 
       // setRatings({});
       // 사용자에게 성공 메시지 제공 (옵션)
@@ -128,6 +130,9 @@ function Evaluation() {
     (member) => member.userId !== userId
   );
 
+  // 필터링된 팀원 데이터 확인
+  console.log("Filtered Members:", filteredMembers);
+
   return (
     <Container>
       <Title>
@@ -135,8 +140,11 @@ function Evaluation() {
       </Title>
       {filteredMembers.map((member) => (
         <MemberContainer key={member.userId}>
+          {console.log(
+            `Rendering member ${member.userId} with rating ${member.rating}`
+          )}
           <ProfileSection>
-            <Picture>사진</Picture>
+            <SideBarPicture rating={member.rating} />
             <ProfileDetails>
               <Name>{member.nickname}</Name>
               <Major>
@@ -238,6 +246,7 @@ const ProfileSection = styled.section`
 const ProfileDetails = styled.div`
   display: flex;
   flex-direction: column;
+  margin-left: 49px;
 `;
 
 const Name = styled.div`

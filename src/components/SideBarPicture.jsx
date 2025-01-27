@@ -53,7 +53,7 @@ const PictureContainer = styled.div`
   width: 128px;
   height: 128px;
   border-radius: 50%;
-  margin-bottom: 16px;
+  /* margin-bottom: 16px; */
   overflow: hidden;
   display: flex;
   align-items: center;

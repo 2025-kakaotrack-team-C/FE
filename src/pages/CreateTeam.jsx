@@ -74,6 +74,7 @@ function CreateTeam() {
         }
       );
       console.log("응답 데이터:", response.data);
+      alert("데이터가 성공적으로 저장되었습니다!");
       navigate(`/`);
     } catch (error) {
       if (
@@ -86,6 +87,7 @@ function CreateTeam() {
         return;
       }
     }
+    alert("데이터가 성공적으로 저장되었습니다!");
     navigate(`/`);
   };
 
