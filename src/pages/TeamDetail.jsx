@@ -56,6 +56,7 @@ const TeamDetail = () => {
           }
         );
         setCurrentUserId(response.data.id);
+        console.log("현재 사용자 ID:", response.data);
       } catch (error) {
         console.error("현재 사용자 정보를 가져오는 데 실패했습니다:", error);
       }
@@ -143,7 +144,9 @@ const TeamDetail = () => {
   if (projectState === 3) {
     navigate(`/project/${id}/evaluation`);
   }
-
+  if (projectState === 4) {
+    navigate(`/completed-project/${id}`);
+  }
   if (isLoading) {
     return <div>로딩 중...</div>;
   }
