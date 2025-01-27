@@ -1,5 +1,6 @@
 name: React CI
 
+# ❶ 언제 워크플로우를 실행할지 지정
 on:
   push:
     branches: ["main"]
@@ -8,37 +9,42 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # CI가 실행될 환경
 
     steps:
-      # 리포지토리 체크아웃
+      # ❷ 리포지토리 체크아웃
       - name: Check out repository
         uses: actions/checkout@v3
 
-      # Node 버전 세팅
+      # ❸ Node 버전 세팅
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18 # 원하는 Node 버전(예: 18, 16 등)
+          node-version: v23.6.1
 
-      # Yarn 설치 & 의존성 설치
+      # ❹ 의존성 설치 (npm 사용 시)
       - name: Install dependencies
-        run: yarn install
+        run: npm install
 
-      # (선택) Yarn 캐시
-      # - name: Cache node_modules
+      # (선택) Yarn 사용 시
+      # - name: Install dependencies
+      #   run: yarn
+
+      # (선택) pnpm 사용 시
+
+      # (선택) 캐싱 예시
+      # - name: Cache node modules
       #   uses: actions/cache@v3
       #   with:
-      #     path: |
-      #       node_modules
-      #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      #     path: node_modules
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
       #     restore-keys: |
-      #       ${{ runner.os }}-yarn-
+      #       ${{ runner.os }}-node-
 
-      # 빌드
+      # ❺ 빌드
       - name: Build
-        run: yarn build
+        run: npm run build
 
-      # 테스트
+      # ❻ 테스트
       - name: Test
-        run: yarn test --watch=false
+        run: npm run test -- --watch=false
