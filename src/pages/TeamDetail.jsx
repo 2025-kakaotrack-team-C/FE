@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { MdMoreVert } from "react-icons/md";
 import axios from "axios";
@@ -15,6 +15,10 @@ const TeamDetail = () => {
   const [teamData, setTeamData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
+
+  // 메뉴와 아이콘을 감싸는 ref
+  const menuRef = useRef(null);
+  const iconRef = useRef(null);
 
   // 모달 열림/닫힘 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,7 +60,6 @@ const TeamDetail = () => {
           }
         );
         setCurrentUserId(response.data.id);
-        console.log("현재 사용자 ID:", response.data);
       } catch (error) {
         console.error("현재 사용자 정보를 가져오는 데 실패했습니다:", error);
       }
@@ -73,7 +76,7 @@ const TeamDetail = () => {
           `${process.env.REACT_APP_API_URL}/api/projects/${id}`
         );
         const data = response.data;
-        console.log(data);
+
         // 프로젝트 state 값 설정
         setProjectState(data.status); // API 응답에 state가 있다고 가정
 
@@ -119,6 +122,25 @@ const TeamDetail = () => {
     }
   }, [id]);
 
+  // 메뉴, 아이콘 외 클릭 시 메뉴 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) && // 메뉴 영역 밖인지 체크
+        iconRef.current &&
+        !iconRef.current.contains(event.target) // 아이콘 영역 밖인지 체크
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // 더보기 메뉴 열기/닫기
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -137,7 +159,7 @@ const TeamDetail = () => {
     어려움: "#e74c3c",
   };
 
-  // 진행 중
+  // 상태 변화에 따른 페이지 이동
   if (projectState === 2) {
     navigate(`/projects/${id}/formation`);
   }
@@ -147,6 +169,7 @@ const TeamDetail = () => {
   if (projectState === 4) {
     navigate(`/completed-project/${id}`);
   }
+
   if (isLoading) {
     return <div>로딩 중...</div>;
   }
@@ -192,11 +215,13 @@ const TeamDetail = () => {
               <div>작성자 : {teamData.author}</div>
               {currentUserId === teamData.authorId && (
                 <>
-                  <IconWrapper onClick={toggleMenu}>
+                  {/* 아이콘도 ref로 감싸기 */}
+                  <IconWrapper ref={iconRef} onClick={toggleMenu}>
                     <MdMoreVert size={24} color="#1c1c1d" />
                   </IconWrapper>
                   {isMenuOpen && (
-                    <Menu>
+                    // 메뉴를 ref로 감싸기
+                    <Menu ref={menuRef}>
                       <MenuItem onClick={handleEdit}>수정</MenuItem>
                       <MenuItem>삭제</MenuItem>
                     </Menu>
@@ -223,25 +248,13 @@ const TeamDetail = () => {
           {currentUserId === teamData.authorId ? (
             <StButton onClick={handleOpenApplyStatus}>지원자 현황</StButton>
           ) : (
-            // "지원하기" 버튼 클릭 -> 모달 열림
             <StButton onClick={openModal}>지원하기</StButton>
           )}
         </>
       )}
 
-      {/*
-        ApplyForm에 
-          isOpen={isModalOpen}
-          closeModal={closeModal}
-          projectId={id}   <-- 추가!!
-        을 props로 넘겨 모달 열림/닫힘을 제어하면서
-        어느 프로젝트에 지원하는지 식별할 수 있도록 합니다.
-      */}
-      <ApplyForm
-        isOpen={isModalOpen}
-        closeModal={closeModal}
-        projectId={id} // 추가
-      />
+      {/* ApplyForm 모달 */}
+      <ApplyForm isOpen={isModalOpen} closeModal={closeModal} projectId={id} />
     </Container>
   );
 };

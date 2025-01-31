@@ -59,7 +59,6 @@ const SideBar = () => {
             },
           }
         );
-        console.log(response);
         const { nickname, major, id } = response.data; // 'id'가 유저 ID라 가정
         setUserData({
           nickname,
@@ -83,12 +82,9 @@ const SideBar = () => {
           }
         );
 
-        console.log("Rating Response:", response.data); // 응답 데이터 확인
-
         // 배열이 비어있는 경우 기본값 0으로 설정
         if (response.data.length === 0) {
           setRating(0);
-          console.log("사용자에 대한 리뷰가 없습니다."); // 로그 추가
           return;
         }
 
@@ -103,9 +99,6 @@ const SideBar = () => {
         const roundedRating = Math.round(averageRating);
 
         setRating(roundedRating);
-        console.log(
-          `평균 레이팅: ${averageRating}, 반올림된 레이팅: ${roundedRating}`
-        );
       } catch (error) {
         console.error("레이팅을 가져오는데 실패했습니다:", error);
         setRating(0); // 실패 시 기본값 설정

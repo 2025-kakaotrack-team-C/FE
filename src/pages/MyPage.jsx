@@ -74,7 +74,6 @@ function MyPage() {
       })
       .then((res) => {
         const data = res.data;
-        console.log("GET mypage data:", data);
 
         // 예시 응답:
         // {
