@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-// import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { MdMoreVert } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,17 +7,24 @@ import { getCookie } from "../utils/Cookie";
 
 const TeamFormation = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate = useNavigate(); // useNavigate 훅 사용
   const [project, setProject] = useState("");
   const [projectMembers, setProjectMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // 메뉴와 아이콘 DOM을 참조할 ref
+  const menuRef = useRef(null);
+  const iconRef = useRef(null);
+
+  // 메뉴를 열고 닫는 함수
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
 
+  // "마감" 버튼 클릭시 동작
   const handleClose = async () => {
     try {
       const token = getCookie("token");
@@ -37,6 +43,31 @@ const TeamFormation = () => {
     }
   };
 
+  // 메뉴가 열려있을 때, 바깥영역 클릭 시 닫히도록 처리
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleClickOutside = (event) => {
+      // 메뉴 영역이나 아이콘 영역 안을 클릭했다면 아무 동작하지 않음
+      if (
+        menuRef.current?.contains(event.target) ||
+        iconRef.current?.contains(event.target)
+      ) {
+        return;
+      }
+      // 그 외 영역을 클릭한 경우 메뉴 닫기
+      setIsMenuOpen(false);
+    };
+
+    window.addEventListener("mousedown", handleClickOutside);
+
+    // 정리(clean-up) 함수
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  // 프로젝트 정보 불러오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -57,10 +88,8 @@ const TeamFormation = () => {
         if (err.response) {
           setError(`Error: ${err.response.status} ${err.response.statusText}`);
         } else if (err.request) {
-          // Request was made but no response received
           setError("Error: No response received from server.");
         } else {
-          // Something else happened
           setError(err.message || "Failed to fetch project data.");
         }
       } finally {
@@ -71,6 +100,7 @@ const TeamFormation = () => {
     fetchData();
   }, [id]);
 
+  // 난이도 / 부서 매핑
   const difficultyMapping = {
     1: "쉬움",
     2: "중간",
@@ -83,17 +113,16 @@ const TeamFormation = () => {
     어려움: "#e74c3c",
   };
 
-  // Department Mapping
   const departmentMapping = {
     1: "ai",
     2: "프론트엔드",
     3: "백엔드",
     4: "앱",
     5: "게임",
-    // Add more mappings as needed
+    // 추가 부서 매핑
   };
 
-  // 댓글 기능 상태 및 로직
+  // 댓글 상태
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const bottomRef = useRef(null);
@@ -112,14 +141,19 @@ const TeamFormation = () => {
     setNewComment("");
   };
 
+  // 댓글이 추가될 때마다 맨 아래로 스크롤
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [comments]);
 
+  // 로딩 상태 또는 에러가 있는 경우 처리 (실제로는 로딩 중 표시나 에러 처리 등을 해줄 수 있음)
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <Container>
+      <Title2>팀 완성</Title2>
       <Rectangle>
-        <Title>팀 완성</Title>
         <Header>
           <Difficulty
             color={
@@ -136,11 +170,13 @@ const TeamFormation = () => {
           <Ttag># 프로젝트 진행중</Ttag>
         </div>
       </Rectangle>
+
       <div>
         <AuthorRow>
           <span>
             팀장: {project.userNickname}(
-            {departmentMapping[project.departments] || "기타"}) - 팀원:{" "}
+            {departmentMapping[project.departments] || "기타"}) &nbsp; - &nbsp;
+            팀원:{" "}
             {projectMembers.length > 0
               ? projectMembers.map((member, index) => (
                   <span key={member.id}>
@@ -151,21 +187,27 @@ const TeamFormation = () => {
                 ))
               : "없음"}
           </span>
-          <IconWrapper onClick={toggleMenu}>
+
+          {/* 아이콘에 ref 추가 */}
+          <IconWrapper ref={iconRef} onClick={toggleMenu}>
             <MdMoreVert size={24} color="#1c1c1d" />
           </IconWrapper>
+
           {isMenuOpen && (
-            <Menu>
+            // 메뉴 영역에 ref 추가
+            <Menu ref={menuRef}>
               <MenuItem onClick={handleClose}>마감</MenuItem>
             </Menu>
           )}
         </AuthorRow>
-        <Border></Border>
+        <Border />
       </div>
+
       <DetailLayout>
         <DetailTitle>프로젝트 내용 설명</DetailTitle>
         <Detail>{project.description}</Detail>
       </DetailLayout>
+
       {/* 댓글 섹션 */}
       <DetailTitle>댓글 창</DetailTitle>
       <CommentContainer>
@@ -194,18 +236,24 @@ const TeamFormation = () => {
 
 export default TeamFormation;
 
+/* 스타일 정의들 */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-content: center;
-  /* height: 100vh; */
-  min-height: 100vh; /* 높이를 최소 화면 크기로 설정 */
+  min-height: 100vh;
   padding: 24px;
   margin: auto;
   max-width: 1440px;
   width: 100%;
-  /* overflow: auto; */
+`;
+
+const Title2 = styled.div`
+  font-size: 36px;
+  font-weight: bold;
+  font-family: "yg-jalnan", sans-serif;
+  margin-bottom: 24px;
 `;
 
 const Rectangle = styled.div`
@@ -216,20 +264,19 @@ const Rectangle = styled.div`
   margin-bottom: 24px;
 `;
 
-const Title = styled.div`
-  font-size: 36px;
-  font-weight: bold;
-`;
-
 const Header = styled.div`
   font-size: 18px;
   margin-bottom: 16px;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
   align-items: center;
   margin-top: 44px;
   gap: 12px;
+`;
+
+const Title = styled.div`
+  font-size: 36px;
+  font-weight: bold;
 `;
 
 const Ttag = styled.div`
@@ -258,10 +305,7 @@ const DetailLayout = styled.div`
 const DetailTitle = styled.div`
   font-size: 24px;
   margin-bottom: 24px;
-  display: flex;
   font-weight: bold;
-  flex-direction: column;
-  gap: 8px;
 `;
 
 const Detail = styled.div`
@@ -279,7 +323,6 @@ const AuthorRow = styled.div`
 const IconWrapper = styled.div`
   cursor: pointer;
   position: relative;
-
   transition: transform 0.2s ease, color 0.3s ease;
 
   &:hover {
@@ -292,6 +335,7 @@ const IconWrapper = styled.div`
   }
 `;
 
+/* 메뉴 전체 박스 */
 const Menu = styled.div`
   position: absolute;
   top: 32px;
@@ -305,6 +349,7 @@ const Menu = styled.div`
   overflow: hidden;
 `;
 
+/* 메뉴 아이템 */
 const MenuItem = styled.div`
   padding: 12px 16px;
   font-size: 16px;
@@ -326,6 +371,7 @@ const MenuItem = styled.div`
   }
 `;
 
+/* 댓글 관련 스타일 */
 const CommentContainer = styled.div`
   display: flex;
   flex-direction: column;
