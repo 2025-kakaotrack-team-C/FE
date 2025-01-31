@@ -50,7 +50,7 @@ function LoginBase() {
     <Wrapper>
       <LeftSection>
         <WelcomeText>
-          {"환영합니다!\n로고와 함께 멋진 팀을 만들어보세요."}
+          {"환영합니다!\nPIN과 함께 멋진 팀을 만들어보세요."}
         </WelcomeText>
       </LeftSection>
       <Box />

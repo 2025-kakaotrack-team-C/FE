@@ -167,6 +167,7 @@ function MyPage() {
       // (d) 성공 시
       setEditing(false);
       alert("수정사항이 저장되었습니다.");
+      window.location.reload();
     } catch (error) {
       console.error("마이페이지 수정 실패:", error);
       alert("수정 중 오류가 발생했습니다.");

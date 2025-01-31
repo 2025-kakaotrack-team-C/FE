@@ -90,9 +90,9 @@ function CompletedProject() {
                 <Language>
                   언어: {languageMap[member.language] || "선택 안함"}
                 </Language>
-                {member.rating && (
+                {/* {member.rating && (
                   <Rating>최종 평점: {member.rating} / 5</Rating>
-                )}
+                )} */}
               </InfoWrapper>
             </MemberCard>
           ))}

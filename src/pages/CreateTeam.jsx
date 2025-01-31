@@ -204,8 +204,8 @@ function CreateTeam() {
                 분야 선택
               </option>
               <option value="AI">AI</option>
-              <option value="프론트">프론트</option>
-              <option value="백">백</option>
+              <option value="프론트">프론트엔드</option>
+              <option value="백">백엔드</option>
               <option value="앱">앱</option>
               <option value="게임">게임</option>
             </Select>

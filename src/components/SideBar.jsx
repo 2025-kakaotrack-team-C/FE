@@ -117,7 +117,7 @@ const SideBar = () => {
 
   const handleTeamBuildingClick = () => {
     setIsTeamBuildingOpen((prev) => !prev);
-    setSelectedMenuItem("팀빌딩");
+    setSelectedMenuItem("팀찾기");
   };
 
   const toggleSidebar = () => {
@@ -231,7 +231,7 @@ const SideBar = () => {
               to="/"
               onClick={handleTeamBuildingClick}
               isSelected={
-                selectedMenuItem === "팀빌딩" ||
+                selectedMenuItem === "팀찾기" ||
                 teamBuildingItems.some(
                   (teamItem) => teamItem.name === selectedMenuItem
                 )
@@ -240,7 +240,7 @@ const SideBar = () => {
               <div
                 style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
-                <FaUsers /> 팀빌딩
+                <FaUsers /> 팀찾기
               </div>
               <ArrowIcon isOpen={isTeamBuildingOpen}>
                 <FaChevronDown />

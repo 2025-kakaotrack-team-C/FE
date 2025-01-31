@@ -121,6 +121,11 @@ function MyPostsSection({ goToPostDetail }) {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error loading data: {error.message}</div>;
 
+  // ===============================
+  // Empty state handling
+  // ===============================
+  const currentFilteredData = getFilteredData();
+
   return (
     <div>
       {/* 필터 헤더 */}
@@ -155,36 +160,37 @@ function MyPostsSection({ goToPostDetail }) {
         )}
       </HeaderWrapper>
 
-      {/* 슬라이더 */}
       <InfoCard>
-        <SliderWrapper>
-          <SliderButton onClick={handlePrev}>
-            <FaChevronLeft />
-          </SliderButton>
-          <SliderTrack currentSlide={currentSlide}>
-            {getFilteredData().map((post) => {
-              // \*Added: get the department name for each post
-              const deptName = getDepartmentName(post.department);
-
-              return (
-                <PostCard
-                  key={post.projectId}
-                  onClick={() => goToPostDetail(post.projectId)}
-                >
-                  <FieldContainer>
-                    <FieldChip field={deptName}>{deptName}</FieldChip>
-                  </FieldContainer>
-                  {/* <p>마감일: {post.deadline}</p>
-                  <p>난이도: {post.difficult}</p> */}
-                  <PostTitle>{post.title}</PostTitle>
-                </PostCard>
-              );
-            })}
-          </SliderTrack>
-          <SliderButton onClick={handleNext}>
-            <FaChevronRight />
-          </SliderButton>
-        </SliderWrapper>
+        {/* 공고가 하나도 없을 때 */}
+        {currentFilteredData.length === 0 ? (
+          <EmptyMessage>공고가 없습니다.</EmptyMessage>
+        ) : (
+          // 슬라이더
+          <SliderWrapper>
+            <SliderButton onClick={handlePrev}>
+              <FaChevronLeft />
+            </SliderButton>
+            <SliderTrack currentSlide={currentSlide}>
+              {currentFilteredData.map((post) => {
+                const deptName = getDepartmentName(post.department);
+                return (
+                  <PostCard
+                    key={post.projectId}
+                    onClick={() => goToPostDetail(post.projectId)}
+                  >
+                    <FieldContainer>
+                      <FieldChip field={deptName}>{deptName}</FieldChip>
+                    </FieldContainer>
+                    <PostTitle>{post.title}</PostTitle>
+                  </PostCard>
+                );
+              })}
+            </SliderTrack>
+            <SliderButton onClick={handleNext}>
+              <FaChevronRight />
+            </SliderButton>
+          </SliderWrapper>
+        )}
       </InfoCard>
     </div>
   );
@@ -258,7 +264,7 @@ const InfoCard = styled.div`
   padding: 24px;
   display: flex;
   flex-direction: column;
-  /* height: 300px; */
+  min-height: 300px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
 
@@ -351,7 +357,7 @@ const FieldContainer = styled.div`
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
-  justify-content: flex-end; /* 모든 화면 크기에서 오른쪽 정렬 */
+  justify-content: flex-end;
 `;
 
 const FieldChip = styled.div`
@@ -359,11 +365,18 @@ const FieldChip = styled.div`
   border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
-
   background-color: #39d372;
 `;
 
 const PostTitle = styled.div`
   font-size: 24px;
   font-weight: bold;
+`;
+
+const EmptyMessage = styled.div`
+  text-align: center;
+  font-family: "yg-jalnan", sans-serif;
+  font-size: 16px;
+  color: #666;
+  margin-top: 40px;
 `;
