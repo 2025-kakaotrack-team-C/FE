@@ -41,7 +41,7 @@
 
 | 🏠 메인 페이지 | 👤 회원가입 / 로그인 |
 | :-------- | :------ |
-| ![메인](https://github.com/user-attachments/assets/메인-페이지-URL) | ![회원가입](https://github.com/user-attachments/assets/회원가입-페이지-URL)<br>![로그인](https://github.com/user-attachments/assets/로그인-페이지-URL) |
+| ![메인](https://github.com/user-attachments/assets/8de804a6-8de4-4658-be30-4be4276e84cd) | ![회원가입](https://github.com/user-attachments/assets/회원가입-페이지-URL)<br>![로그인](https://github.com/user-attachments/assets/로그인-페이지-URL) |
 | 프로젝트 전체 목록을 확인하고 검색할 수 있습니다. | 새로운 계정 생성 및 로그인 기능을 제공합니다. |
 
 ---
