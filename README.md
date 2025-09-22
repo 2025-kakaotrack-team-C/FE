@@ -39,71 +39,38 @@
 
 ## 🎨 주요 기능
 
-### 🏠 메인 페이지
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/메인-페이지-이미지-URL" alt="메인 페이지"/>
-</p>
+| 🏠 메인 페이지 | 👤 회원가입 / 로그인 |
+| :-------- | :------ |
+| ![메인](https://github.com/user-attachments/assets/메인-페이지-URL) | ![회원가입](https://github.com/user-attachments/assets/회원가입-페이지-URL)<br>![로그인](https://github.com/user-attachments/assets/로그인-페이지-URL) |
+| 프로젝트 전체 목록을 확인하고 검색할 수 있습니다. | 새로운 계정 생성 및 로그인 기능을 제공합니다. |
 
 ---
 
-### 👤 회원 관리
-#### 회원가입 페이지
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/회원가입-페이지-이미지-URL" alt="회원가입 페이지"/>
-</p>
-
-#### 로그인 페이지
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/로그인-페이지-이미지-URL" alt="로그인 페이지"/>
-</p>
-
-#### 마이페이지
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/마이페이지-이미지-URL" alt="마이페이지"/>
-</p>
+| 👤 마이페이지 | 👥 팀 빌딩 작성 |
+| :-------- | :------ |
+| ![마이페이지](https://github.com/user-attachments/assets/마이페이지-URL) | ![팀 빌딩 작성](https://github.com/user-attachments/assets/팀빌딩-작성-페이지-URL) |
+| 내 정보, 참여한 프로젝트, 지원 현황 등을 관리할 수 있습니다. | 팀 빌딩 게시물을 작성하고 모집 포지션을 설정할 수 있습니다. |
 
 ---
 
-### 👥 팀 빌딩
-#### 팀 빌딩 게시물 작성
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/팀빌딩-작성-페이지-이미지-URL" alt="팀 빌딩 게시물 작성"/>
-</p>
-
-#### 팀 빌딩 상세 페이지
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/팀빌딩-상세-페이지-이미지-URL" alt="팀 빌딩 상세"/>
-</p>
-
-#### 팀 빌딩 완료 페이지
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/팀빌딩-완료-페이지-이미지-URL" alt="팀 빌딩 완료"/>
-</p>
+| 📄 팀 빌딩 상세 | ✅ 팀 빌딩 완료 |
+| :-------- | :------ |
+| ![팀 빌딩 상세](https://github.com/user-attachments/assets/팀빌딩-상세-페이지-URL) | ![팀 빌딩 완료](https://github.com/user-attachments/assets/팀빌딩-완료-페이지-URL) |
+| 프로젝트 세부 내용을 확인하고 지원할 수 있습니다. | 팀 빌딩이 완료된 프로젝트의 상태를 확인할 수 있습니다. |
 
 ---
 
-### 📩 지원 관련
-#### 지원자 제출 모달
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/지원자-제출-모달-이미지-URL" alt="지원자 제출 모달"/>
-</p>
-
-#### 지원 알림 모달
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/지원-알림-모달-이미지-URL" alt="지원 알림 모달"/>
-</p>
-
-#### 지원 현황 페이지
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/지원-현황-페이지-이미지-URL" alt="지원 현황 페이지"/>
-</p>
+| 📩 지원자 제출 모달 | 🔔 지원 알림 모달 |
+| :-------- | :------ |
+| ![지원자 제출](https://github.com/user-attachments/assets/지원자-제출-모달-URL) | ![지원 알림](https://github.com/user-attachments/assets/지원-알림-모달-URL) |
+| 지원자가 프로젝트에 신청할 수 있는 모달 창입니다. | 프로젝트 리더가 새로운 지원을 확인할 수 있는 알림 창입니다. |
 
 ---
 
-### ⭐ 프로젝트 평가
-<p align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/평가-페이지-이미지-URL" alt="평가 페이지"/>
-</p>
+| 📊 지원 현황 | ⭐ 프로젝트 평가 |
+| :-------- | :------ |
+| ![지원 현황](https://github.com/user-attachments/assets/지원-현황-페이지-URL) | ![평가](https://github.com/user-attachments/assets/평가-페이지-URL) |
+| 프로젝트 지원자 리스트와 상세 정보를 확인할 수 있습니다. | 프로젝트 종료 후 팀원에 대한 평가를 남길 수 있습니다. |
 
 
 ---
