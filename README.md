@@ -41,35 +41,35 @@
 
 | 🏠 메인 페이지 | 👤 회원가입 / 로그인 |
 | :-------- | :------ |
-| ![메인](https://github.com/user-attachments/assets/8de804a6-8de4-4658-be30-4be4276e84cd) | ![회원가입](https://github.com/user-attachments/assets/회원가입-페이지-URL)<br>![로그인](https://github.com/user-attachments/assets/로그인-페이지-URL) |
+| ![메인](https://github.com/user-attachments/assets/8de804a6-8de4-4658-be30-4be4276e84cd) | ![회원가입](https://github.com/user-attachments/assets/b4e9888b-a980-4ba2-9f20-13eaee9b299d)<br>![로그인](https://github.com/user-attachments/assets/ca742b8a-a292-4abd-b7e2-ed16a7d7a906) |
 | 프로젝트 전체 목록을 확인하고 검색할 수 있습니다. | 새로운 계정 생성 및 로그인 기능을 제공합니다. |
 
 ---
 
 | 👤 마이페이지 | 👥 팀 빌딩 작성 |
 | :-------- | :------ |
-| ![마이페이지](https://github.com/user-attachments/assets/마이페이지-URL) | ![팀 빌딩 작성](https://github.com/user-attachments/assets/팀빌딩-작성-페이지-URL) |
+| ![마이페이지](https://github.com/user-attachments/assets/edf8b506-ee0b-4f1d-93d2-a0ac5a2d7bf8) | ![팀 빌딩 작성](https://github.com/user-attachments/assets/43d3a9f4-4b66-4027-8168-bf61dbba7129) |
 | 내 정보, 참여한 프로젝트, 지원 현황 등을 관리할 수 있습니다. | 팀 빌딩 게시물을 작성하고 모집 포지션을 설정할 수 있습니다. |
 
 ---
 
 | 📄 팀 빌딩 상세 | ✅ 팀 빌딩 완료 |
 | :-------- | :------ |
-| ![팀 빌딩 상세](https://github.com/user-attachments/assets/팀빌딩-상세-페이지-URL) | ![팀 빌딩 완료](https://github.com/user-attachments/assets/팀빌딩-완료-페이지-URL) |
+| ![팀 빌딩 상세](https://github.com/user-attachments/assets/144b14f0-18c8-4d2d-9033-d719a0e9db70) | ![팀 빌딩 완료](https://github.com/user-attachments/assets/a637c2eb-2f9a-48cb-a569-02771cdcee61) |
 | 프로젝트 세부 내용을 확인하고 지원할 수 있습니다. | 팀 빌딩이 완료된 프로젝트의 상태를 확인할 수 있습니다. |
 
 ---
 
 | 📩 지원자 제출 모달 | 🔔 지원 알림 모달 |
 | :-------- | :------ |
-| ![지원자 제출](https://github.com/user-attachments/assets/지원자-제출-모달-URL) | ![지원 알림](https://github.com/user-attachments/assets/지원-알림-모달-URL) |
+| ![지원자 제출](https://github.com/user-attachments/assets/8f37dc0a-0e64-46ce-9f20-937faf8239f2) | ![지원 알림](https://github.com/user-attachments/assets/cefbf4e6-72fd-4544-9cb7-ee41d3eef9fe) |
 | 지원자가 프로젝트에 신청할 수 있는 모달 창입니다. | 프로젝트 리더가 새로운 지원을 확인할 수 있는 알림 창입니다. |
 
 ---
 
 | 📊 지원 현황 | ⭐ 프로젝트 평가 |
 | :-------- | :------ |
-| ![지원 현황](https://github.com/user-attachments/assets/지원-현황-페이지-URL) | ![평가](https://github.com/user-attachments/assets/평가-페이지-URL) |
+| ![지원 현황](https://github.com/user-attachments/assets/462ce060-4f46-495b-a7cf-95bd6f039c11) | ![평가](https://github.com/user-attachments/assets/19c6a306-6f77-4ed0-b1aa-32f0139c8bc9) |
 | 프로젝트 지원자 리스트와 상세 정보를 확인할 수 있습니다. | 프로젝트 종료 후 팀원에 대한 평가를 남길 수 있습니다. |
 
 
