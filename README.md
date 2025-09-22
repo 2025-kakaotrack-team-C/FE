@@ -32,7 +32,7 @@
 | **DevOps**    | GitHub Actions (CI/CD) |
 
 <p align="center">
-  <img width="715" height="495" alt="Architecture" src="https://github.com/user-attachments/assets/bd5f672e-aa6f-450a-b968-ba2805f7cbb9" />
+  <img width="1886" height="211" alt="Group 289406" src="https://github.com/user-attachments/assets/75c6ac22-c56d-4ad1-b060-f6174b96266b" />
 </p>  
 
 ---
