@@ -37,20 +37,74 @@
 
 ---
 
-## ✨ 주요 기능  
+## 🎨 주요 기능
 
-### 📂 프로젝트 관리  
-- 프로젝트 생성, 조회, 수정, 삭제  
+### 🏠 메인 페이지
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/메인-페이지-이미지-URL" alt="메인 페이지"/>
+</p>
 
-### 👥 팀원 모집  
-- 포지션(분야)별 팀원 신청 및 관리  
+---
 
-### 💬 리뷰 및 댓글  
-- 프로젝트 및 팀원에 대한 리뷰와 댓글 작성  
+### 👤 회원 관리
+#### 회원가입 페이지
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/회원가입-페이지-이미지-URL" alt="회원가입 페이지"/>
+</p>
 
-### 🙋 마이페이지  
-- 내 정보 관리  
-- 내가 참여한 프로젝트 & 지원한 프로젝트 목록 관리  
+#### 로그인 페이지
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/로그인-페이지-이미지-URL" alt="로그인 페이지"/>
+</p>
+
+#### 마이페이지
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/마이페이지-이미지-URL" alt="마이페이지"/>
+</p>
+
+---
+
+### 👥 팀 빌딩
+#### 팀 빌딩 게시물 작성
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/팀빌딩-작성-페이지-이미지-URL" alt="팀 빌딩 게시물 작성"/>
+</p>
+
+#### 팀 빌딩 상세 페이지
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/팀빌딩-상세-페이지-이미지-URL" alt="팀 빌딩 상세"/>
+</p>
+
+#### 팀 빌딩 완료 페이지
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/팀빌딩-완료-페이지-이미지-URL" alt="팀 빌딩 완료"/>
+</p>
+
+---
+
+### 📩 지원 관련
+#### 지원자 제출 모달
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/지원자-제출-모달-이미지-URL" alt="지원자 제출 모달"/>
+</p>
+
+#### 지원 알림 모달
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/지원-알림-모달-이미지-URL" alt="지원 알림 모달"/>
+</p>
+
+#### 지원 현황 페이지
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/지원-현황-페이지-이미지-URL" alt="지원 현황 페이지"/>
+</p>
+
+---
+
+### ⭐ 프로젝트 평가
+<p align="center">
+  <img width="700" src="https://github.com/user-attachments/assets/평가-페이지-이미지-URL" alt="평가 페이지"/>
+</p>
+
 
 ---
 
